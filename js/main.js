@@ -126,6 +126,22 @@ if (contactForm) {
         submitButton.disabled = true;
         submitButton.textContent = 'Sending...';
 
+        // Check honeypot (spam trap)
+        const honeypot = document.querySelector('input[name="_gotcha"]');
+        if (honeypot && honeypot.value) {
+            // Bot detected - silently fail
+            console.log('Spam detected - submission blocked');
+            submitButton.textContent = 'Message Sent!';
+            submitButton.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            setTimeout(() => {
+                contactForm.reset();
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
+                submitButton.style.background = '';
+            }, 3000);
+            return;
+        }
+
         // Get form data
         const formData = {
             name: document.getElementById('name').value,
@@ -136,25 +152,31 @@ if (contactForm) {
         };
 
         try {
-            // Here you would integrate with your backend or form service
-            // For now, we'll simulate a successful submission
+            // Send to Formspree
+            const response = await fetch('https://formspree.io/f/mlgwgavq', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    company: formData.company,
+                    problem: formData.problem
+                })
+            });
 
-            // Example: Send to backend
-            // const response = await fetch('/api/contact', {
-            //     method: 'POST',
-            //     headers: { 'Content-Type': 'application/json' },
-            //     body: JSON.stringify(formData)
-            // });
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1500));
+            if (!response.ok) {
+                throw new Error('Form submission failed');
+            }
 
             // Show success message
             submitButton.textContent = 'Message Sent!';
             submitButton.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
 
-            // Log form data (in production, this would be sent to your backend)
-            console.log('Form submitted:', formData);
+            // Log success
+            console.log('Form submitted successfully:', formData);
 
             // Reset form after 3 seconds
             setTimeout(() => {
@@ -164,7 +186,7 @@ if (contactForm) {
                 submitButton.style.background = '';
             }, 3000);
 
-            // Optional: Show a more prominent success notification
+            // Show success notification
             showNotification('Thank you! We\'ll be in touch within 24 hours.', 'success');
 
         } catch (error) {

@@ -166,12 +166,14 @@ ul {
     align-items: center;
     justify-content: space-between;
     padding: 1rem 0;
+    gap: 2rem;
 }
 
 .logo-partnership {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    flex-shrink: 0;
 }
 
 .logo {
@@ -209,17 +211,19 @@ ul {
 .nav-links {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: clamp(0.75rem, 2vw, 2rem);
+    flex-wrap: nowrap;
 }
 
 .nav-link {
     color: var(--color-gray-400);
     font-weight: 500;
-    font-size: 0.95rem;
+    font-size: clamp(0.875rem, 1.5vw, 0.95rem);
     padding: 0.5rem 0.75rem;
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
     position: relative;
+    white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -1346,6 +1350,10 @@ section {
         --spacing-xxl: 5rem;
     }
 
+    .nav-content {
+        gap: 1rem;
+    }
+
     .logo-partnership {
         gap: 0.5rem;
     }
@@ -1376,6 +1384,13 @@ section {
         opacity: 0;
         pointer-events: none;
         transition: all var(--transition-normal);
+        gap: 0.5rem;
+    }
+
+    .nav-link {
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem 1rem;
     }
 
     .nav-links.active {
@@ -1447,8 +1462,7 @@ section {
     }
 
     .process-step::before {
-        left: 31px;
-        top: 70px;
+        display: none;
     }
 
     .step-number {
@@ -1522,7 +1536,9 @@ section {
     }
 
     .nav-links .cta-button {
-        width: auto;
+        width: 100%;
+        max-width: 300px;
+        margin: 0.5rem auto 0;
     }
 }
 
@@ -1537,20 +1553,30 @@ section {
         padding: 0 var(--spacing-sm);
     }
 
-    .logo-partnership {
+    .nav-content {
         gap: 0.5rem;
+        padding: 0.75rem 0;
+    }
+
+    .logo-partnership {
+        gap: 0.4rem;
     }
 
     .logo-img {
-        height: 40px;
+        height: 38px;
     }
 
     .lact-logo-nav {
-        height: 30px;
+        height: 28px;
     }
 
     .plus-sign {
-        font-size: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+        padding: 0.625rem 0.875rem;
     }
 
     .hero-tagline {
