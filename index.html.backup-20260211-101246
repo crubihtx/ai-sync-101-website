@@ -5,30 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Sync 101 - 20 Years Building Systems That Work</title>
     <meta name="description" content="We solve expensive operational problems for mid-market companies with custom platforms and intelligent automation. Not an AI company. A technology partner with two decades of operational expertise.">
-
-    <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/logo.png">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://aisync101.com">
-    <meta property="og:title" content="AI Sync 101 - We Build What You Need, Not What We Sell">
-    <meta property="og:description" content="20 years building operational systems. Custom platforms and intelligent automation that solve your most expensive business challenges.">
-    <meta property="og:image" content="https://aisync101.com/assets/og-image.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/png">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://aisync101.com">
-    <meta property="twitter:title" content="AI Sync 101 - We Build What You Need, Not What We Sell">
-    <meta property="twitter:description" content="20 years building operational systems. Custom platforms and intelligent automation that solve your most expensive business challenges.">
-    <meta property="twitter:image" content="https://aisync101.com/assets/og-image.png">
-
     <link rel="stylesheet" href="css/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,7 +29,6 @@
                     <a href="#services" class="nav-link">Services</a>
                     <a href="#process" class="nav-link">Process</a>
                     <a href="#results" class="nav-link">Results</a>
-                    <a href="#faq" class="nav-link">FAQ</a>
                     <a href="#about" class="nav-link">About</a>
                     <a href="#contact" class="cta-button">Schedule Consultation</a>
                 </div>
@@ -70,9 +45,6 @@
     <section id="hero" class="hero">
         <div class="container">
             <div class="hero-content">
-                <div class="hero-tagline">
-                    We build what you need, not what we sell
-                </div>
                 <h1 class="hero-title">
                     20 Years Building Systems That Work.<br>
                     <span class="gradient-text">Now Powered by AI.</span>
@@ -541,9 +513,6 @@
                 </div>
 
                 <form class="contact-form" id="contactForm">
-                    <!-- Honeypot field for spam protection (hidden from humans, visible to bots) -->
-                    <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
-
                     <div class="form-row">
                         <div class="form-group">
                             <label for="name">Name</label>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 80" fill="none">
+  <!-- LACompuTech text -->
+  <g>
+    <!-- LA in italic -->
+    <text x="5" y="55" font-family="'Times New Roman', Times, serif" font-size="48" font-style="italic" font-weight="700" fill="#000000">LA</text>
+
+    <!-- Compu in normal -->
+    <text x="85" y="55" font-family="'Times New Roman', Times, serif" font-size="48" font-style="normal" font-weight="400" fill="#000000">Compu</text>
+
+    <!-- Tech in italic -->
+    <text x="245" y="55" font-family="'Times New Roman', Times, serif" font-size="48" font-style="italic" font-weight="700" fill="#000000">Tech</text>
+  </g>
+
+  <!-- Red swoosh/ellipse -->
+  <g transform="translate(390, 40)">
+    <ellipse cx="35" cy="0" rx="32" ry="40" fill="none" stroke="#B91E3D" stroke-width="6" transform="rotate(20)" opacity="0.85"/>
+  </g>
+</svg>
