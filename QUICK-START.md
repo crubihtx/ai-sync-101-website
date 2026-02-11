@@ -28,7 +28,7 @@ Your **AI Discovery Widget** that replicates Carlos's discovery meeting style to
 5. **Add Environment Variable**:
    - Click **"Environment Variables"**
    - Name: `OPENAI_API_KEY`
-   - Value: `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`
+   - Value: `YOUR_OPENAI_API_KEY_HERE`
    - Select: **Production, Preview, Development**
    - Click "Add"
 
