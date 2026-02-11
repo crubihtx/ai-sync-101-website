@@ -1,0 +1,14 @@
+{
+  "name": "aisync101-discovery-widget-backend",
+  "version": "1.0.0",
+  "description": "Azure Functions backend for AI Sync 101 Discovery Widget",
+  "main": "index.js",
+  "scripts": {
+    "start": "func start",
+    "test": "echo \"No tests specified\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "azure-functions-core-tools": "^4.x"
+  }
+}

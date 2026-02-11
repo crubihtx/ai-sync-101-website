@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sync 101 Discovery Widget - Demo</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="widget-styles.css">
+    <style>
+        /* Demo page specific styles */
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .demo-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00A3FF 0%, #FF1F8F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-header p {
+            font-size: 1.25rem;
+            color: #888;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-card {
+            background: #1A1A1A;
+            border: 2px solid #2A2A2A;
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .demo-card h3 {
+            color: #00A3FF;
+            margin-bottom: 1rem;
+        }
+
+        .demo-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .demo-card li {
+            padding: 0.5rem 0;
+            color: #AAAAAA;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .demo-card li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00A3FF;
+            font-weight: bold;
+        }
+
+        .demo-instructions {
+            background: linear-gradient(135deg, rgba(0, 163, 255, 0.1) 0%, rgba(255, 31, 143, 0.1) 100%);
+            border: 2px solid #2A2A2A;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-instructions h3 {
+            color: #00A3FF;
+            margin-bottom: 1rem;
+        }
+
+        .demo-instructions code {
+            background: #0A0A0A;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: #00A3FF;
+            font-family: monospace;
+        }
+
+        .demo-note {
+            background: #1A1A1A;
+            border-left: 4px solid #00A3FF;
+            padding: 1rem;
+            margin-top: 2rem;
+            border-radius: 4px;
+        }
+
+        .demo-note p {
+            color: #AAAAAA;
+            margin: 0;
+        }
+
+        .demo-note strong {
+            color: #00A3FF;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🚀 AI Discovery Widget - Demo</h1>
+            <p>iMessage-style conversational AI for lead generation</p>
+        </div>
+
+        <div class="demo-instructions">
+            <h3>📝 Demo Instructions</h3>
+            <p>This is a <strong>visual demo</strong> of the widget UI. To see the full interactive version:</p>
+            <ol style="color: #AAAAAA; margin-left: 1.5rem; margin-top: 1rem;">
+                <li>Deploy the Azure Functions backend (see <code>README.md</code>)</li>
+                <li>Update <code>apiEndpoint</code> in <code>widget-script.js</code></li>
+                <li>Open this page in a browser</li>
+            </ol>
+            <p style="margin-top: 1rem; color: #888;">
+                For now, you can see the widget UI appear in the bottom-right corner!
+            </p>
+        </div>
+
+        <div class="demo-grid">
+            <div class="demo-card">
+                <h3>✨ Features</h3>
+                <ul>
+                    <li>iMessage-style UI</li>
+                    <li>Typing indicators</li>
+                    <li>Smooth animations</li>
+                    <li>Mobile-responsive</li>
+                    <li>Auto-open + floating button</li>
+                    <li>Lead capture form</li>
+                    <li>localStorage persistence</li>
+                </ul>
+            </div>
+
+            <div class="demo-card">
+                <h3>🧠 AI Behavior</h3>
+                <ul>
+                    <li>Carlos's discovery style</li>
+                    <li>Pain point focused</li>
+                    <li>Money-driven questions</li>
+                    <li>Natural conversation</li>
+                    <li>10-15 message limit</li>
+                    <li>Graceful endings</li>
+                </ul>
+            </div>
+
+            <div class="demo-card">
+                <h3>📧 Integration</h3>
+                <ul>
+                    <li>Email summaries</li>
+                    <li>Lead notifications</li>
+                    <li>Full transcripts</li>
+                    <li>Formspree integration</li>
+                    <li>Azure Functions backend</li>
+                    <li>OpenAI GPT-4 Turbo</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="demo-note">
+            <p><strong>Note:</strong> Click the floating button in the bottom-right corner to see the widget UI. The AI responses won't work until you deploy the Azure Functions backend.</p>
+        </div>
+    </div>
+
+    <!-- Widget will appear here -->
+    <script>
+        // Temporary mock data for demo without backend
+        window.DEMO_MODE = true;
+
+        // Mock responses for demo
+        window.DEMO_RESPONSES = [
+            "Hey! I'm with AI Sync 101. We help mid-market companies solve expensive operational problems through custom platforms and automation.\n\nQuick question to get started - what's the biggest operational bottleneck that's costing your business time or money right now?",
+            "That sounds frustrating. How much time is your team spending on that every week?",
+            "Got it. If we could automate that, what would the impact be? Time saved? Revenue recovered?",
+            "Interesting. What systems are you using today for that process?",
+            "Makes sense. Have you tried any solutions before? What didn't work?",
+            "This sounds like a perfect fit for what we do. We recently worked with a company that had a similar challenge...",
+            "Based on what you've shared, I think we could help. Would you like to explore this with our team on a discovery call?"
+        ];
+
+        window.DEMO_RESPONSE_INDEX = 0;
+    </script>
+    <script src="widget-script.js"></script>
+
+    <!-- Override API call for demo -->
+    <script>
+        if (window.DEMO_MODE) {
+            // Wait for widget to be initialized
+            setTimeout(() => {
+                if (window.aiDiscoveryWidget) {
+                    // Override getAIResponse for demo
+                    const originalGetAIResponse = window.aiDiscoveryWidget.getAIResponse.bind(window.aiDiscoveryWidget);
+
+                    window.aiDiscoveryWidget.getAIResponse = async function(userMessage) {
+                        this.showTypingIndicator();
+
+                        // Simulate typing delay
+                        const typingDelay = this.getRandomTypingDelay();
+                        await this.sleep(typingDelay);
+
+                        this.hideTypingIndicator();
+
+                        // Get next mock response
+                        const response = window.DEMO_RESPONSES[window.DEMO_RESPONSE_INDEX % window.DEMO_RESPONSES.length];
+                        window.DEMO_RESPONSE_INDEX++;
+
+                        this.sendAssistantMessage(response);
+
+                        // Check if we should show lead capture
+                        if (this.shouldShowLeadCapture()) {
+                            this.showLeadCaptureForm();
+                        }
+                    };
+
+                    console.log('Demo mode active - using mock responses');
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

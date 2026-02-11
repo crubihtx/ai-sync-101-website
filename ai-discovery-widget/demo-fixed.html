@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sync 101 Discovery Widget - Demo</title>
+    <link rel="stylesheet" href="widget-styles.css">
+    <style>
+        /* Demo page specific styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0A0A0A;
+            color: #E5E5E5;
+            margin: 0;
+            padding: 0;
+        }
+
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .demo-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .demo-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00A3FF 0%, #FF1F8F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-header p {
+            font-size: 1.25rem;
+            color: #888;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .demo-card {
+            background: #1A1A1A;
+            border: 2px solid #2A2A2A;
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .demo-card h3 {
+            color: #00A3FF;
+            margin-bottom: 1rem;
+        }
+
+        .demo-card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .demo-card li {
+            padding: 0.5rem 0;
+            color: #AAAAAA;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .demo-card li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00A3FF;
+            font-weight: bold;
+        }
+
+        .demo-instructions {
+            background: linear-gradient(135deg, rgba(0, 163, 255, 0.1) 0%, rgba(255, 31, 143, 0.1) 100%);
+            border: 2px solid #2A2A2A;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-instructions h3 {
+            color: #00A3FF;
+            margin-bottom: 1rem;
+        }
+
+        .demo-instructions code {
+            background: #0A0A0A;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            color: #00A3FF;
+            font-family: monospace;
+        }
+
+        .demo-note {
+            background: #1A1A1A;
+            border-left: 4px solid #00A3FF;
+            padding: 1rem;
+            margin-top: 2rem;
+            border-radius: 4px;
+        }
+
+        .demo-note p {
+            color: #AAAAAA;
+            margin: 0;
+        }
+
+        .demo-note strong {
+            color: #00A3FF;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🚀 AI Discovery Widget - Demo</h1>
+            <p>iMessage-style conversational AI for lead generation</p>
+        </div>
+
+        <div class="demo-instructions">
+            <h3>📝 Demo Instructions</h3>
+            <p>This is a <strong>visual demo</strong> of the widget with mock AI responses.</p>
+            <ol style="color: #AAAAAA; margin-left: 1.5rem; margin-top: 1rem;">
+                <li><strong>Look for the floating button</strong> in the bottom-right corner</li>
+                <li><strong>Click it</strong> to open the widget</li>
+                <li><strong>Type a message</strong> and press Enter or click send</li>
+                <li>AI will respond with mock messages (no backend needed for demo)</li>
+            </ol>
+            <p style="margin-top: 1rem; color: #888;">
+                To get real AI responses, you'll need to deploy the Azure Functions backend. See <code>README.md</code> for instructions.
+            </p>
+        </div>
+
+        <div class="demo-grid">
+            <div class="demo-card">
+                <h3>✨ Features</h3>
+                <ul>
+                    <li>iMessage-style UI</li>
+                    <li>Typing indicators</li>
+                    <li>Smooth animations</li>
+                    <li>Mobile-responsive</li>
+                    <li>Auto-open + floating button</li>
+                    <li>Lead capture form</li>
+                    <li>localStorage persistence</li>
+                </ul>
+            </div>
+
+            <div class="demo-card">
+                <h3>🧠 AI Behavior</h3>
+                <ul>
+                    <li>Carlos's discovery style</li>
+                    <li>Pain point focused</li>
+                    <li>Money-driven questions</li>
+                    <li>Natural conversation</li>
+                    <li>10-15 message limit</li>
+                    <li>Graceful endings</li>
+                </ul>
+            </div>
+
+            <div class="demo-card">
+                <h3>📧 Integration</h3>
+                <ul>
+                    <li>Email summaries</li>
+                    <li>Lead notifications</li>
+                    <li>Full transcripts</li>
+                    <li>Formspree integration</li>
+                    <li>Azure Functions backend</li>
+                    <li>OpenAI GPT-4 Turbo</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="demo-note">
+            <p><strong>👉 Click the floating button in the bottom-right corner to see the widget in action!</strong></p>
+        </div>
+    </div>
+
+    <!-- WIDGET STARTS HERE -->
+    <!-- Floating Chat Button -->
+    <button id="chatToggle" class="chat-toggle" aria-label="Open chat">
+        <svg class="chat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span class="notification-badge" id="notificationBadge">1</span>
+    </button>
+
+    <!-- Chat Widget Container -->
+    <div id="chatWidget" class="chat-widget">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="header-content">
+                <img src="../assets/logo.png" alt="AI Sync 101" class="header-logo">
+                <div class="header-text">
+                    <h3>AI Sync 101</h3>
+                    <p class="header-status" id="headerStatus">Discovery Assistant</p>
+                </div>
+            </div>
+            <button class="minimize-btn" id="minimizeBtn" aria-label="Minimize chat">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" id="chatMessages">
+            <!-- Messages will be inserted here dynamically -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator" style="display: none;">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <p>AI Sync 101 is typing...</p>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <textarea
+                    id="chatInput"
+                    class="chat-input"
+                    placeholder="Type your message..."
+                    rows="1"
+                ></textarea>
+                <button id="sendBtn" class="send-btn" aria-label="Send message">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+            <p class="input-hint">Press Enter to send, Shift+Enter for new line</p>
+        </div>
+
+        <!-- Lead Capture Form (Hidden initially) -->
+        <div class="lead-capture-form" id="leadCaptureForm" style="display: none;">
+            <div class="form-header">
+                <h4>Let's stay connected</h4>
+                <p>Get a personalized summary and recommendations</p>
+            </div>
+            <div class="form-fields">
+                <input type="text" id="leadName" placeholder="Your name" required>
+                <input type="email" id="leadEmail" placeholder="Your email" required>
+                <div class="form-actions">
+                    <button id="submitLeadBtn" class="submit-lead-btn">Send Summary</button>
+                    <button id="skipLeadBtn" class="skip-lead-btn">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Powered By -->
+    <div class="powered-by">
+        <p>Powered by <a href="https://www.aisync101.com" target="_blank">AI Sync 101</a></p>
+    </div>
+
+    <!-- Mock responses for demo -->
+    <script>
+        window.DEMO_MODE = true;
+        window.DEMO_RESPONSES = [
+            "Hey! I'm with AI Sync 101. We help mid-market companies solve expensive operational problems through custom platforms and automation.\n\nQuick question to get started - what's the biggest operational bottleneck that's costing your business time or money right now?",
+            "That sounds frustrating. How much time is your team spending on that every week?",
+            "Got it. If we could automate that, what would the impact be? Time saved? Revenue recovered?",
+            "Interesting. What systems are you using today for that process?",
+            "Makes sense. Have you tried any solutions before? What didn't work?",
+            "This sounds like a perfect fit for what we do. We recently worked with a company that had a similar challenge where we built a custom platform that automated their data flow.",
+            "Based on what you've shared, I think we could help. Would you like to explore this with our team on a discovery call?",
+            "Perfect! I'll send you a summary and connect you with our team. They'll dive way deeper into your workflows and put together a real plan."
+        ];
+        window.DEMO_RESPONSE_INDEX = 0;
+    </script>
+
+    <script src="widget-script.js"></script>
+
+    <!-- Override API call for demo -->
+    <script>
+        setTimeout(() => {
+            if (window.aiDiscoveryWidget && window.DEMO_MODE) {
+                // Override getAIResponse for demo
+                window.aiDiscoveryWidget.getAIResponse = async function(userMessage) {
+                    this.showTypingIndicator();
+
+                    // Simulate typing delay
+                    const typingDelay = this.getRandomTypingDelay();
+                    await this.sleep(typingDelay);
+
+                    this.hideTypingIndicator();
+
+                    // Get next mock response
+                    const response = window.DEMO_RESPONSES[window.DEMO_RESPONSE_INDEX % window.DEMO_RESPONSES.length];
+                    window.DEMO_RESPONSE_INDEX++;
+
+                    this.sendAssistantMessage(response);
+
+                    // Check if we should show lead capture
+                    if (this.shouldShowLeadCapture()) {
+                        this.showLeadCaptureForm();
+                    }
+                };
+
+                console.log('✅ Demo mode active - using mock AI responses');
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
