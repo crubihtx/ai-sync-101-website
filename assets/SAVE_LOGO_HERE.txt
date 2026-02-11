@@ -1,0 +1,27 @@
+SAVE YOUR LOGO HERE
+===================
+
+You shared two versions of your AI Sync 101 logo:
+
+1. Logo WITH black background - for standalone use
+2. Logo WITHOUT background (transparent) - for use on the website
+
+TO ADD THE LOGO TO YOUR WEBSITE:
+---------------------------------
+
+1. Right-click on the logo image WITHOUT the black background
+   (the one with transparent background that you shared)
+
+2. Save it as: logo.png
+
+3. Place it in THIS folder:
+   /Users/crubi/Desktop/AI Sync 101 Website/ai-sync-101-website/assets/
+
+4. Refresh your browser at http://localhost:8000
+
+The logo will appear in:
+- Navigation bar (top)
+- Footer (bottom)
+
+The dark theme website is now ready and will look great with your
+blue-to-pink gradient logo!

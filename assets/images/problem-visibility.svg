@@ -1,0 +1,118 @@
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- No Visibility Problem Illustration -->
+  <defs>
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A0A0A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A1A1A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A3FF;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#FF1F8F;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bgGrad3)"/>
+
+  <!-- Dashboard Frame -->
+  <rect x="80" y="80" width="640" height="360" rx="12" fill="#0A0A0A" stroke="url(#accentGrad3)" stroke-width="3"/>
+
+  <!-- Dashboard Top Bar -->
+  <rect x="80" y="80" width="640" height="50" rx="12" fill="url(#accentGrad3)" opacity="0.15"/>
+  <text x="400" y="112" font-size="18" fill="#00A3FF" text-anchor="middle" font-weight="600">Operations Dashboard</text>
+
+  <!-- Empty Chart Areas (showing lack of data) -->
+
+  <!-- Chart 1 - Empty Bar Chart -->
+  <g opacity="0.4">
+    <rect x="110" y="160" width="180" height="120" rx="6" fill="#0A0A0A" stroke="#2A2A2A" stroke-width="2"/>
+    <line x1="120" y1="260" x2="280" y2="260" stroke="#2A2A2A" stroke-width="2"/>
+    <line x1="120" y1="170" x2="120" y2="260" stroke="#2A2A2A" stroke-width="2"/>
+
+    <!-- Empty bars -->
+    <rect x="140" y="230" width="20" height="3" fill="#2A2A2A"/>
+    <rect x="175" y="230" width="20" height="3" fill="#2A2A2A"/>
+    <rect x="210" y="230" width="20" height="3" fill="#2A2A2A"/>
+    <rect x="245" y="230" width="20" height="3" fill="#2A2A2A"/>
+  </g>
+
+  <!-- Chart 2 - Empty Line Chart -->
+  <g opacity="0.4">
+    <rect x="320" y="160" width="180" height="120" rx="6" fill="#0A0A0A" stroke="#2A2A2A" stroke-width="2"/>
+    <line x1="330" y1="260" x2="490" y2="260" stroke="#2A2A2A" stroke-width="2"/>
+    <line x1="330" y1="170" x2="330" y2="260" stroke="#2A2A2A" stroke-width="2"/>
+    <path d="M 340 240 L 360 240 L 380 240 L 400 240" stroke="#2A2A2A" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Chart 3 - Empty Metrics -->
+  <g opacity="0.4">
+    <rect x="530" y="160" width="160" height="120" rx="6" fill="#0A0A0A" stroke="#2A2A2A" stroke-width="2"/>
+    <rect x="545" y="180" width="130" height="30" rx="4" fill="#0A0A0A" stroke="#2A2A2A" stroke-width="1"/>
+    <rect x="545" y="220" width="130" height="30" rx="4" fill="#0A0A0A" stroke="#2A2A2A" stroke-width="1"/>
+  </g>
+
+  <!-- Bottom Area - Empty Table -->
+  <g opacity="0.4">
+    <rect x="110" y="310" width="580" height="110" rx="6" fill="#0A0A0A" stroke="#2A2A2A" stroke-width="2"/>
+    <line x1="110" y1="340" x2="690" y2="340" stroke="#2A2A2A" stroke-width="1"/>
+    <line x1="110" y1="365" x2="690" y2="365" stroke="#2A2A2A" stroke-width="1"/>
+    <line x1="110" y1="390" x2="690" y2="390" stroke="#2A2A2A" stroke-width="1"/>
+  </g>
+
+  <!-- "No Data" Messages -->
+  <text x="200" y="225" font-size="14" fill="#2A2A2A" text-anchor="middle">No Data</text>
+  <text x="410" y="225" font-size="14" fill="#2A2A2A" text-anchor="middle">No Data</text>
+  <text x="610" y="225" font-size="14" fill="#2A2A2A" text-anchor="middle">---</text>
+  <text x="400" y="365" font-size="14" fill="#2A2A2A" text-anchor="middle">No Records Found</text>
+
+  <!-- Loading Spinners (stuck/delayed) -->
+  <g>
+    <circle cx="200" cy="215" r="12" fill="none" stroke="#00A3FF" stroke-width="2" opacity="0.3" stroke-dasharray="60 20">
+      <animateTransform attributeName="transform" type="rotate" from="0 200 215" to="360 200 215" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="410" cy="215" r="12" fill="none" stroke="#FF1F8F" stroke-width="2" opacity="0.3" stroke-dasharray="60 20">
+      <animateTransform attributeName="transform" type="rotate" from="0 410 215" to="360 410 215" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+    </circle>
+  </g>
+
+  <!-- Question Marks (uncertainty) -->
+  <g opacity="0.6">
+    <circle cx="150" cy="380" r="25" fill="none" stroke="url(#accentGrad3)" stroke-width="2"/>
+    <text x="150" y="390" font-size="28" fill="url(#accentGrad3)" text-anchor="middle" font-weight="bold">?</text>
+
+    <circle cx="650" cy="380" r="25" fill="none" stroke="url(#accentGrad3)" stroke-width="2"/>
+    <text x="650" y="390" font-size="28" fill="url(#accentGrad3)" text-anchor="middle" font-weight="bold">?</text>
+  </g>
+
+  <!-- Blind/Fog overlay effect -->
+  <g opacity="0.15">
+    <ellipse cx="400" cy="250" rx="250" ry="150" fill="white">
+      <animate attributeName="opacity" values="0.1;0.2;0.1" dur="4s" repeatCount="indefinite"/>
+    </ellipse>
+  </g>
+
+  <!-- Warning Badge -->
+  <g>
+    <rect x="320" y="40" width="160" height="30" rx="15" fill="#FF1F8F" opacity="0.2"/>
+    <text x="400" y="60" font-size="14" fill="#FF1F8F" text-anchor="middle" font-weight="600">
+      ⚠ Delayed Reporting
+    </text>
+  </g>
+
+  <!-- Clock/Time indicator (showing delay) -->
+  <g opacity="0.7">
+    <circle cx="50" cy="50" r="25" fill="#0A0A0A" stroke="url(#accentGrad3)" stroke-width="2"/>
+    <line x1="50" y1="50" x2="50" y2="32" stroke="#00A3FF" stroke-width="2" stroke-linecap="round">
+      <animateTransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="8s" repeatCount="indefinite"/>
+    </line>
+    <line x1="50" y1="50" x2="65" y2="50" stroke="#FF1F8F" stroke-width="2" stroke-linecap="round"/>
+    <text x="50" y="100" font-size="11" fill="#888" text-anchor="middle">Days Behind</text>
+  </g>
+
+  <!-- Eye with slash (no visibility) -->
+  <g opacity="0.5">
+    <ellipse cx="750" cy="450" rx="30" ry="20" fill="none" stroke="url(#accentGrad3)" stroke-width="2"/>
+    <circle cx="750" cy="450" r="8" fill="url(#accentGrad3)"/>
+    <line x1="730" y1="430" x2="770" y2="470" stroke="#FF1F8F" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

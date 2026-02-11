@@ -1,0 +1,90 @@
+<svg width="800" height="500" viewBox="0 0 800 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Manual Data Entry Problem Illustration -->
+  <defs>
+    <linearGradient id="bgGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0A0A0A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A1A1A;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accentGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A3FF;stop-opacity:0.6" />
+      <stop offset="100%" style="stop-color:#FF1F8F;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bgGrad1)"/>
+
+  <!-- Scattered Papers/Documents (chaos) -->
+  <g opacity="0.7">
+    <rect x="100" y="150" width="120" height="160" rx="4" fill="#1A1A1A" stroke="url(#accentGrad1)" stroke-width="2" transform="rotate(-15 160 230)"/>
+    <rect x="200" y="180" width="120" height="160" rx="4" fill="#1A1A1A" stroke="url(#accentGrad1)" stroke-width="2" transform="rotate(8 260 260)"/>
+    <rect x="320" y="160" width="120" height="160" rx="4" fill="#1A1A1A" stroke="url(#accentGrad1)" stroke-width="2" transform="rotate(-10 380 240)"/>
+    <rect x="450" y="170" width="120" height="160" rx="4" fill="#1A1A1A" stroke="url(#accentGrad1)" stroke-width="2" transform="rotate(12 510 250)"/>
+    <rect x="580" y="155" width="120" height="160" rx="4" fill="#1A1A1A" stroke="url(#accentGrad1)" stroke-width="2" transform="rotate(-8 640 235)"/>
+  </g>
+
+  <!-- Data entry lines on papers -->
+  <g opacity="0.4">
+    <!-- Paper 1 lines -->
+    <line x1="120" y1="180" x2="180" y2="190" stroke="#00A3FF" stroke-width="2" transform="rotate(-15 160 230)"/>
+    <line x1="120" y1="200" x2="180" y2="210" stroke="#00A3FF" stroke-width="2" transform="rotate(-15 160 230)"/>
+    <line x1="120" y1="220" x2="180" y2="230" stroke="#00A3FF" stroke-width="2" transform="rotate(-15 160 230)"/>
+
+    <!-- Paper 3 lines -->
+    <line x1="340" y1="190" x2="400" y2="200" stroke="#FF1F8F" stroke-width="2" transform="rotate(-10 380 240)"/>
+    <line x1="340" y1="210" x2="400" y2="220" stroke="#FF1F8F" stroke-width="2" transform="rotate(-10 380 240)"/>
+
+    <!-- Paper 5 lines -->
+    <line x1="600" y1="185" x2="660" y2="195" stroke="#00A3FF" stroke-width="2" transform="rotate(-8 640 235)"/>
+    <line x1="600" y1="205" x2="660" y2="215" stroke="#00A3FF" stroke-width="2" transform="rotate(-8 640 235)"/>
+  </g>
+
+  <!-- Computer/Keyboard at bottom -->
+  <rect x="250" y="380" width="300" height="80" rx="8" fill="#0A0A0A" stroke="url(#accentGrad1)" stroke-width="3"/>
+
+  <!-- Keyboard keys -->
+  <g opacity="0.6">
+    <rect x="270" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="300" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="330" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="360" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="390" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="420" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="450" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="480" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+    <rect x="510" y="400" width="25" height="25" rx="2" fill="#1A1A1A" stroke="#00A3FF" stroke-width="1"/>
+  </g>
+
+  <!-- Arrows showing manual transfer (person to computer) -->
+  <g stroke="url(#accentGrad1)" stroke-width="3" fill="none" opacity="0.8">
+    <path d="M 160 320 Q 250 350 300 370" stroke-dasharray="8,4">
+      <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <path d="M 380 320 Q 420 350 450 370" stroke-dasharray="8,4">
+      <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+    </path>
+    <path d="M 640 320 Q 550 350 520 370" stroke-dasharray="8,4">
+      <animate attributeName="stroke-dashoffset" from="0" to="-24" dur="2s" repeatCount="indefinite" begin="1s"/>
+    </path>
+  </g>
+
+  <!-- Error/Warning symbols -->
+  <circle cx="150" cy="120" r="20" fill="none" stroke="#FF1F8F" stroke-width="3" opacity="0.7">
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="150" y="130" font-size="24" fill="#FF1F8F" text-anchor="middle" font-weight="bold">!</text>
+
+  <circle cx="650" cy="130" r="20" fill="none" stroke="#FF1F8F" stroke-width="3" opacity="0.7">
+    <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite" begin="1s"/>
+  </circle>
+  <text x="650" y="140" font-size="24" fill="#FF1F8F" text-anchor="middle" font-weight="bold">!</text>
+
+  <!-- Time/Clock indicator (showing wasted time) -->
+  <circle cx="400" cy="100" r="35" fill="#0A0A0A" stroke="url(#accentGrad1)" stroke-width="3"/>
+  <line x1="400" y1="100" x2="400" y2="75" stroke="#00A3FF" stroke-width="3" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 400 100" to="360 400 100" dur="4s" repeatCount="indefinite"/>
+  </line>
+  <line x1="400" y1="100" x2="420" y2="100" stroke="#FF1F8F" stroke-width="3" stroke-linecap="round">
+    <animateTransform attributeName="transform" type="rotate" from="0 400 100" to="360 400 100" dur="60s" repeatCount="indefinite"/>
+  </line>
+</svg>

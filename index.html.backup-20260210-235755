@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Sync 101 - 20 Years Building Operational Systems. Now Powered by AI.</title>
+    <meta name="description" content="We solve expensive operational problems for mid-market companies with custom platforms and intelligent automation. Not an AI company. A technology partner with two decades of operational expertise.">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <img src="assets/logo.png" alt="AI Sync 101" class="logo-img">
+                </div>
+                <div class="nav-links">
+                    <a href="#services" class="nav-link">Services</a>
+                    <a href="#process" class="nav-link">Process</a>
+                    <a href="#results" class="nav-link">Results</a>
+                    <a href="#about" class="nav-link">About</a>
+                    <a href="#contact" class="cta-button">Schedule Consultation</a>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    20 Years Building Systems That Work.<br>
+                    <span class="gradient-text">Now Powered by AI.</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Custom platforms and intelligent automation that solve your most expensive business challenges
+                </p>
+                <p class="hero-supporting">
+                    Not an AI company. A technology partner with two decades of operational expertise.
+                </p>
+                <div class="hero-cta">
+                    <a href="#contact" class="cta-button primary">Schedule a Consultation</a>
+                </div>
+            </div>
+        </div>
+        <div class="hero-gradient"></div>
+        <div class="hero-vignette"></div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How We Solve Your Operational Challenges</h2>
+                <p class="section-subtitle">We build what you need, not what we sell</p>
+            </div>
+
+            <div class="services-grid">
+                <!-- Quick Wins -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <h3 class="service-title">Quick Wins</h3>
+                        <p class="service-subtitle">Connect Your Tools</p>
+                    </div>
+                    <div class="service-content">
+                        <p class="service-description">
+                            Connect existing tools to eliminate manual data entry and reduce operational friction
+                        </p>
+                        <ul class="service-features">
+                            <li>Tool-to-tool integrations</li>
+                            <li>Automated data flow</li>
+                            <li>Eliminate manual entry</li>
+                            <li>Live in 30-60 days</li>
+                        </ul>
+                        <div class="service-pricing">
+                            <p class="pricing-value">Transparent, predictable pricing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Platform -->
+                <div class="service-card featured">
+                    <div class="service-badge">Most Common</div>
+                    <div class="service-header">
+                        <h3 class="service-title">Custom Platform</h3>
+                        <p class="service-subtitle">Tailored to Your Operations</p>
+                    </div>
+                    <div class="service-content">
+                        <p class="service-description">
+                            Purpose-built systems that replace spreadsheets, manual workflows, and disconnected tools
+                        </p>
+                        <ul class="service-features">
+                            <li>Custom workflows & automation</li>
+                            <li>Real-time visibility into operations</li>
+                            <li>Mobile-first design</li>
+                            <li>First version live in 60 days</li>
+                        </ul>
+                        <div class="service-pricing">
+                            <p class="pricing-value">Scaled to your operational needs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Platform + AI -->
+                <div class="service-card">
+                    <div class="service-header">
+                        <h3 class="service-title">Intelligent Platform</h3>
+                        <p class="service-subtitle">AI-Powered Automation</p>
+                    </div>
+                    <div class="service-content">
+                        <p class="service-description">
+                            Custom platform enhanced with AI to handle complex operational decisions at scale
+                        </p>
+                        <ul class="service-features">
+                            <li>Intelligent automation</li>
+                            <li>Predictive workflows</li>
+                            <li>Natural language interfaces</li>
+                            <li>Continuous learning systems</li>
+                        </ul>
+                        <div class="service-pricing">
+                            <p class="pricing-value">Based on measurable impact</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="services-note">
+                <p>All projects priced based on measurable impact. If we can't identify significant annual impact, we'll tell you upfront.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="process">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Discovery-First, Iterative Delivery</h2>
+                <p class="section-subtitle">Working features, not waterfall projects</p>
+            </div>
+
+            <div class="process-timeline">
+                <div class="process-step">
+                    <div class="step-number">01</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Discovery</h3>
+                        <p class="step-description">
+                            We identify the operational pain costing you time and money, then quantify the impact before proposing solutions.
+                        </p>
+                        <ul class="step-details">
+                            <li>Deep-dive operational analysis</li>
+                            <li>Quantify current costs & inefficiencies</li>
+                            <li>Map existing workflows & pain points</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">02</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Initial Launch</h3>
+                        <p class="step-description">
+                            We deploy your first working system in 60 days—real features solving real problems, not documentation.
+                        </p>
+                        <ul class="step-details">
+                            <li>Core functionality first</li>
+                            <li>Working software in production</li>
+                            <li>Immediate operational impact</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">03</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Iterate & Expand</h3>
+                        <p class="step-description">
+                            Continuous development cycles add new capabilities based on real usage feedback.
+                        </p>
+                        <ul class="step-details">
+                            <li>New capabilities each cycle</li>
+                            <li>Build what users actually need</li>
+                            <li>Continuous improvement</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="process-step">
+                    <div class="step-number">04</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Deploy & Support</h3>
+                        <p class="step-description">
+                            Ongoing services included monthly: infrastructure management, security updates, and operational support.
+                        </p>
+                        <ul class="step-details">
+                            <li>SOC 2 certified infrastructure</li>
+                            <li>Security & compliance built-in</li>
+                            <li>Proactive monitoring & maintenance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problems & Solutions Section -->
+    <section id="results" class="case-study">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Common Operational Problems We Solve</h2>
+                <p class="section-subtitle">Real challenges mid-market companies face every day</p>
+            </div>
+
+            <div class="case-study-content">
+                <div class="case-study-grid">
+                    <div class="case-study-column">
+                        <div class="case-study-section">
+                            <h4 class="case-label">Manual Data Entry</h4>
+                            <ul class="case-list problem">
+                                <li>Hours wasted copying data between systems</li>
+                                <li>Human errors causing billing delays</li>
+                                <li>No single source of truth for operations</li>
+                                <li>Teams spending time on repetitive tasks</li>
+                            </ul>
+                            <div class="solution-arrow">→</div>
+                            <ul class="case-list solution">
+                                <li>Automated data sync between platforms</li>
+                                <li>Real-time integration workflows</li>
+                                <li>Centralized operational dashboard</li>
+                                <li>Team focuses on value-added work</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="case-study-column">
+                        <div class="case-study-section">
+                            <h4 class="case-label">Spreadsheet Dependency</h4>
+                            <ul class="case-list problem">
+                                <li>Critical operations running in Excel</li>
+                                <li>Version control nightmares</li>
+                                <li>No audit trail or accountability</li>
+                                <li>Impossible to scale processes</li>
+                            </ul>
+                            <div class="solution-arrow">→</div>
+                            <ul class="case-list solution">
+                                <li>Custom operational platforms</li>
+                                <li>Built-in version control and history</li>
+                                <li>Complete audit trails and permissions</li>
+                                <li>Processes that scale with growth</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="case-study-column">
+                        <div class="case-study-section">
+                            <h4 class="case-label">No Real-Time Visibility</h4>
+                            <ul class="case-list problem">
+                                <li>Management flying blind on operations</li>
+                                <li>Can't identify bottlenecks until too late</li>
+                                <li>Reporting delayed by days or weeks</li>
+                                <li>Reactive instead of proactive decisions</li>
+                            </ul>
+                            <div class="solution-arrow">→</div>
+                            <ul class="case-list solution">
+                                <li>Live operational dashboards</li>
+                                <li>Instant bottleneck identification</li>
+                                <li>Real-time metrics and KPIs</li>
+                                <li>Data-driven decision making</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="case-study-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">Typical Results</span>
+                        <span class="meta-value">Hours saved daily, errors eliminated, visibility gained</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Timeline</span>
+                        <span class="meta-value">Working solutions in 60-90 days</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Approach</span>
+                        <span class="meta-value">Phased deployment, iterative improvement</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">From Break/Fix to AI Integration: 20 Years of Evolution</h2>
+                <p class="section-subtitle">We've built the operational foundation that lets us understand your business from the ground up</p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2004-2010</span>
+                        <h3 class="timeline-title">Break/Fix IT & MSP Operations</h3>
+                        <p class="timeline-description">
+                            Started in the trenches solving real operational IT problems for small businesses. Learned what actually works in production environments.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2010-2015</span>
+                        <h3 class="timeline-title">Managed Services & Cybersecurity</h3>
+                        <p class="timeline-description">
+                            Evolved into comprehensive managed services and security operations. Built SOC 2 certified infrastructure and compliance expertise.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2015-2020</span>
+                        <h3 class="timeline-title">Software Development & Custom Platforms</h3>
+                        <p class="timeline-description">
+                            Began building custom operational software when off-the-shelf solutions couldn't solve client problems. Developed expertise in rapid platform development.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker active"></div>
+                    <div class="timeline-content">
+                        <span class="timeline-date">2020-Present</span>
+                        <h3 class="timeline-title">AI Integration & Intelligent Automation</h3>
+                        <p class="timeline-description">
+                            Leveraging AI as another tool in the operational toolbox. Combining decades of systems expertise with modern AI capabilities to solve complex business problems.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-footer">
+                <p class="about-note">
+                    <strong>Sister company to Louisiana Computer Technologies</strong> — We share operational infrastructure, SOC 2 certification, and 20+ years of experience solving technology problems for businesses.
+                </p>
+                <a href="https://louisianacomputech.com" target="_blank" rel="noopener noreferrer" class="about-link">
+                    Visit Louisiana Computer Technologies →
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Common Questions</h2>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3 class="faq-question">What makes you different from dev shops?</h3>
+                    <p class="faq-answer">
+                        We're not a development shop — we're an operations company that builds software. We've spent 20 years running IT operations, managing infrastructure, and solving real business problems. We understand operational efficiency, workflow design, and system integration from hands-on experience, not just technical implementation.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Why not just use AI tools ourselves?</h3>
+                    <p class="faq-answer">
+                        Off-the-shelf AI tools solve generic problems. Your operational challenges are specific to your business processes, existing systems, and workflow requirements. We build custom platforms that integrate with your existing infrastructure and solve your exact problem — not a close approximation.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">What if we already have [Tool X]?</h3>
+                    <p class="faq-answer">
+                        Good. We integrate with it. Most of our projects involve connecting existing tools, filling gaps where commercial software doesn't fit, and building the "glue layer" between systems. We're not here to replace working tools — we solve problems your current stack can't handle.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">How do you price projects?</h3>
+                    <p class="faq-answer">
+                        Projects are priced based on measurable impact. If we can't identify significant annual impact (time savings, revenue recovery, cost reduction), we'll tell you upfront. Development happens in predictable phases with clear deliverables. No long-term contracts — just working software that solves real problems.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">What happens after deployment?</h3>
+                    <p class="faq-answer">
+                        Monthly ongoing services include infrastructure management, security updates, monitoring, and support. Your platform runs on SOC 2 certified infrastructure. We handle the technical operations so you can focus on using the system. Additional features are developed in predictable phases as needed.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">Do you work with companies outside Louisiana?</h3>
+                    <p class="faq-answer">
+                        Yes. While our roots are in Louisiana, we work with mid-market companies nationwide. Custom software development and operational automation don't require physical presence — we work remotely with clients across the US who have complex operational challenges.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-header">
+                    <h2 class="section-title">Let's Solve Your Operational Problem</h2>
+                    <p class="section-subtitle">
+                        Tell us about the operational challenge costing you time or money. We'll tell you if we can help.
+                    </p>
+                </div>
+
+                <form class="contact-form" id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="company">Company</label>
+                        <input type="text" id="company" name="company" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="problem">What's the operational problem costing you time or money?</label>
+                        <textarea id="problem" name="problem" rows="5" required placeholder="Describe the specific operational challenge, workflow inefficiency, or manual process that's impacting your business..."></textarea>
+                    </div>
+
+                    <button type="submit" class="cta-button primary">Schedule Consultation</button>
+                </form>
+
+                <p class="contact-note">
+                    We typically respond within 24 hours. First conversation is always free — we'll tell you if we can help.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="assets/logo.png" alt="AI Sync 101" class="logo-img">
+                    <p class="footer-tagline">20 years of operational expertise. Now powered by AI.</p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="#services">Quick Wins</a></li>
+                            <li><a href="#services">Custom Platforms</a></li>
+                            <li><a href="#services">AI Integration</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#about">About</a></li>
+                            <li><a href="#process">Process</a></li>
+                            <li><a href="#faq">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Connect</h4>
+                        <ul>
+                            <li><a href="#contact">Contact</a></li>
+                            <li><a href="https://louisianacomputech.com" target="_blank" rel="noopener">Louisiana Computer Technologies</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 AI Sync 101. Sister company to Louisiana Computer Technologies.</p>
+                <p class="footer-cert">Infrastructure certified to SOC 2 standards</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

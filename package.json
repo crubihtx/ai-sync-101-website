@@ -1,0 +1,27 @@
+{
+  "name": "ai-sync-101-website",
+  "version": "1.0.0",
+  "description": "AI Sync 101 - 20 Years Building Operational Systems. Now Powered by AI.",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000 || php -S localhost:8000 || npx http-server -p 8000",
+    "start": "npm run dev",
+    "deploy:netlify": "npx netlify-cli deploy --prod",
+    "deploy:vercel": "npx vercel --prod"
+  },
+  "keywords": [
+    "ai",
+    "automation",
+    "custom-software",
+    "operational-systems",
+    "business-software"
+  ],
+  "author": "AI Sync 101",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ai-sync-101-website.git"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

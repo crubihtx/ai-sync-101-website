@@ -1,0 +1,33 @@
+LOGO PLACEMENT INSTRUCTIONS
+===========================
+
+Place your AI Sync 101 logo in this folder.
+
+Required:
+---------
+- Filename: logo.png
+- Format: PNG with transparent background
+- Recommended size: 400x400px minimum (will be scaled automatically)
+- The logo should be the blue-to-pink gradient "A" with orbiting elements from your branding
+
+The logo will be used in:
+-------------------------
+1. Navigation bar (scaled to 40px height)
+2. Footer (scaled to 40px height, inverted to white for dark background)
+
+Logo from your image:
+--------------------
+You provided an image at the start of our conversation.
+Save that logo image as "logo.png" in this assets folder.
+
+Temporary Placeholder:
+---------------------
+Until you add the logo, the site will show a broken image icon.
+The layout and spacing are already configured correctly.
+
+Alternative Formats:
+-------------------
+If you prefer SVG format for better scaling:
+1. Save as logo.svg instead of logo.png
+2. Update references in index.html:
+   - Change <img src="assets/logo.png" to <img src="assets/logo.svg"

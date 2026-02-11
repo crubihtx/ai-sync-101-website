@@ -1,0 +1,60 @@
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Intelligent Platform Icon: AI Brain / Neural Network -->
+  <defs>
+    <linearGradient id="gradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00A3FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF1F8F;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Brain Outline -->
+  <path d="M 128 48 C 108 48 92 54 82 66 C 76 58 66 52 54 52 C 36 52 24 64 24 82 C 24 92 28 100 34 106 C 32 112 30 118 30 126 C 30 144 40 158 52 166 C 48 172 46 180 46 188 C 46 206 60 220 78 220 C 86 220 94 217 100 212 C 108 224 118 232 128 232 C 138 232 148 224 156 212 C 162 217 170 220 178 220 C 196 220 210 206 210 188 C 210 180 208 172 204 166 C 216 158 226 144 226 126 C 226 118 224 112 222 106 C 228 100 232 92 232 82 C 232 64 220 52 202 52 C 190 52 180 58 174 66 C 164 54 148 48 128 48 Z"
+        fill="none"
+        stroke="url(#gradient3)"
+        stroke-width="4"/>
+
+  <!-- Neural Network Nodes - Left Hemisphere -->
+  <circle cx="80" cy="100" r="6" fill="#00A3FF"/>
+  <circle cx="68" cy="128" r="6" fill="#00A3FF"/>
+  <circle cx="80" cy="156" r="6" fill="#00A3FF"/>
+  <circle cx="96" cy="180" r="6" fill="#00A3FF"/>
+
+  <!-- Neural Network Nodes - Right Hemisphere -->
+  <circle cx="176" cy="100" r="6" fill="#FF1F8F"/>
+  <circle cx="188" cy="128" r="6" fill="#FF1F8F"/>
+  <circle cx="176" cy="156" r="6" fill="#FF1F8F"/>
+  <circle cx="160" cy="180" r="6" fill="#FF1F8F"/>
+
+  <!-- Center Processing Nodes -->
+  <circle cx="128" cy="90" r="6" fill="url(#gradient3)"/>
+  <circle cx="128" cy="128" r="8" fill="url(#gradient3)"/>
+  <circle cx="128" cy="166" r="6" fill="url(#gradient3)"/>
+
+  <!-- Neural Connections - Left -->
+  <line x1="80" y1="100" x2="128" y2="90" stroke="#00A3FF" stroke-width="2" opacity="0.6"/>
+  <line x1="68" y1="128" x2="128" y2="128" stroke="#00A3FF" stroke-width="2" opacity="0.6"/>
+  <line x1="80" y1="156" x2="128" y2="166" stroke="#00A3FF" stroke-width="2" opacity="0.6"/>
+  <line x1="80" y1="100" x2="68" y2="128" stroke="#00A3FF" stroke-width="1.5" opacity="0.4"/>
+  <line x1="68" y1="128" x2="80" y2="156" stroke="#00A3FF" stroke-width="1.5" opacity="0.4"/>
+  <line x1="80" y1="156" x2="96" y2="180" stroke="#00A3FF" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Neural Connections - Right -->
+  <line x1="176" y1="100" x2="128" y2="90" stroke="#FF1F8F" stroke-width="2" opacity="0.6"/>
+  <line x1="188" y1="128" x2="128" y2="128" stroke="#FF1F8F" stroke-width="2" opacity="0.6"/>
+  <line x1="176" y1="156" x2="128" y2="166" stroke="#FF1F8F" stroke-width="2" opacity="0.6"/>
+  <line x1="176" y1="100" x2="188" y2="128" stroke="#FF1F8F" stroke-width="1.5" opacity="0.4"/>
+  <line x1="188" y1="128" x2="176" y2="156" stroke="#FF1F8F" stroke-width="1.5" opacity="0.4"/>
+  <line x1="176" y1="156" x2="160" y2="180" stroke="#FF1F8F" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Center Connections -->
+  <line x1="128" y1="90" x2="128" y2="128" stroke="url(#gradient3)" stroke-width="2" opacity="0.7"/>
+  <line x1="128" y1="128" x2="128" y2="166" stroke="url(#gradient3)" stroke-width="2" opacity="0.7"/>
+
+  <!-- AI Spark Effect -->
+  <g opacity="0.8">
+    <circle cx="128" cy="128" r="12" fill="none" stroke="url(#gradient3)" stroke-width="2">
+      <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
