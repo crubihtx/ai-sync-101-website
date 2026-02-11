@@ -466,6 +466,12 @@ class AIDiscoveryWidget {
 // INITIALIZE WIDGET
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize immediately if DOM is already loaded, otherwise wait for DOMContentLoaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        window.aiDiscoveryWidget = new AIDiscoveryWidget();
+    });
+} else {
+    // DOM already loaded, initialize immediately
     window.aiDiscoveryWidget = new AIDiscoveryWidget();
-});
+}
