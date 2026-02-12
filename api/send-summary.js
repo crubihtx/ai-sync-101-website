@@ -158,7 +158,7 @@ async function sendEmail(summary) {
   `;
 
   // Send via Formspree
-  const formspreeResponse = await fetch('https://formspree.io/f/mlgwgavq', {
+  const formspreeResponse = await fetch('https://formspree.io/f/xwvnvdeo', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ async function sendLeadEmail(leadInfo, summary) {
   `;
 
   // Send via Formspree
-  const formspreeResponse = await fetch('https://formspree.io/f/mlgwgavq', {
+  const formspreeResponse = await fetch('https://formspree.io/f/xwvnvdeo', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
