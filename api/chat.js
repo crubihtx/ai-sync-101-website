@@ -565,10 +565,9 @@ export default async function handler(req) {
       { role: 'system', content: SYSTEM_PROMPT }
     ];
 
-    // Add previous messages (limit to last 20 for token efficiency)
+    // Add ALL previous messages (full conversation context - we'll optimize later if needed)
     if (messages && messages.length > 0) {
-      const recentMessages = messages.slice(-20);
-      recentMessages.forEach(msg => {
+      messages.forEach(msg => {
         conversationHistory.push({
           role: msg.role,
           content: msg.content
