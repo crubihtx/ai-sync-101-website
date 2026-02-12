@@ -51,13 +51,18 @@ export default async function handler(req) {
 
     // Generate summary
     const summary = generateSummary(messages, leadInfo);
+    console.log('Generated summary for:', leadInfo);
 
     // Send email to you (info@aisync101.com)
+    console.log('Sending email to info@aisync101.com...');
     await sendEmailToYou(summary, resendApiKey);
+    console.log('Email sent to info@aisync101.com successfully');
 
     // Send email to lead if they provided contact info
     if (leadInfo && leadInfo.email) {
+      console.log('Sending email to lead:', leadInfo.email);
       await sendEmailToLead(leadInfo, summary, resendApiKey);
+      console.log('Email sent to lead successfully');
     }
 
     return new Response(JSON.stringify({ success: true }), {

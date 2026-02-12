@@ -102,7 +102,6 @@
                         <input type="email" id="leadEmail" placeholder="Your email" required>
                         <div class="form-actions">
                             <button id="submitLeadBtn" class="submit-lead-btn">Send Summary</button>
-                            <button id="skipLeadBtn" class="skip-lead-btn">Maybe Later</button>
                         </div>
                     </div>
                 </div>

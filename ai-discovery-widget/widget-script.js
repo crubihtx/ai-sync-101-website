@@ -40,7 +40,6 @@ class AIDiscoveryWidget {
             leadName: document.getElementById('leadName'),
             leadEmail: document.getElementById('leadEmail'),
             submitLeadBtn: document.getElementById('submitLeadBtn'),
-            skipLeadBtn: document.getElementById('skipLeadBtn'),
         };
 
         this.init();
@@ -85,7 +84,6 @@ class AIDiscoveryWidget {
 
         // Lead capture form
         this.elements.submitLeadBtn.addEventListener('click', () => this.handleLeadCapture());
-        this.elements.skipLeadBtn.addEventListener('click', () => this.hideLeadCaptureForm());
 
         // Enter key in lead form
         this.elements.leadEmail.addEventListener('keydown', (e) => {
