@@ -32,6 +32,7 @@ class AIDiscoveryWidget {
             chatInput: document.getElementById('chatInput'),
             sendBtn: document.getElementById('sendBtn'),
             minimizeBtn: document.getElementById('minimizeBtn'),
+            refreshBtn: document.getElementById('refreshBtn'),
             typingIndicator: document.getElementById('typingIndicator'),
             headerStatus: document.getElementById('headerStatus'),
             notificationBadge: document.getElementById('notificationBadge'),
@@ -68,6 +69,7 @@ class AIDiscoveryWidget {
         // Toggle chat widget
         this.elements.chatToggle.addEventListener('click', () => this.toggleWidget());
         this.elements.minimizeBtn.addEventListener('click', () => this.toggleWidget());
+        this.elements.refreshBtn.addEventListener('click', () => this.startNewConversation());
 
         // Send message
         this.elements.sendBtn.addEventListener('click', () => this.handleSendMessage());
@@ -128,6 +130,30 @@ class AIDiscoveryWidget {
         this.elements.chatWidget.classList.remove('active');
         this.elements.chatToggle.classList.remove('active');
         localStorage.setItem('aisync_widget_dismissed', 'true');
+    }
+
+    startNewConversation() {
+        if (confirm('Start a new conversation? This will clear your current chat history.')) {
+            // Clear state
+            this.state.messages = [];
+            this.state.conversationId = this.generateConversationId();
+            this.state.leadCaptured = false;
+            this.state.leadInfo = null;
+            this.state.messageCount = 0;
+            this.state.userMessageCount = 0;
+
+            // Clear storage
+            localStorage.removeItem('aisync_conversation');
+
+            // Clear UI
+            this.elements.chatMessages.innerHTML = '';
+            this.hideLeadCaptureForm();
+
+            // Send initial greeting
+            setTimeout(() => {
+                this.sendAssistantMessage(this.getInitialGreeting());
+            }, 500);
+        }
     }
 
     // ==========================================
