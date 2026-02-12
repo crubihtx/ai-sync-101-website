@@ -36,12 +36,6 @@ class AIDiscoveryWidget {
             typingIndicator: document.getElementById('typingIndicator'),
             headerStatus: document.getElementById('headerStatus'),
             notificationBadge: document.getElementById('notificationBadge'),
-            leadCaptureForm: document.getElementById('leadCaptureForm'),
-            leadName: document.getElementById('leadName'),
-            leadEmail: document.getElementById('leadEmail'),
-            leadWebsite: document.getElementById('leadWebsite'),
-            leadCompany: document.getElementById('leadCompany'),
-            submitLeadBtn: document.getElementById('submitLeadBtn'),
         };
 
         this.init();
@@ -83,17 +77,6 @@ class AIDiscoveryWidget {
 
         // Auto-resize textarea
         this.elements.chatInput.addEventListener('input', () => this.autoResizeTextarea());
-
-        // Lead capture form
-        this.elements.submitLeadBtn.addEventListener('click', () => this.handleLeadCapture());
-
-        // Enter key in lead form
-        this.elements.leadEmail.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                this.handleLeadCapture();
-            }
-        });
     }
 
     autoOpenWidget() {
@@ -170,21 +153,7 @@ class AIDiscoveryWidget {
         this.elements.chatInput.value = '';
         this.autoResizeTextarea();
 
-        // Check if we should show lead capture form
-        if (this.shouldShowLeadCapture()) {
-            // AI message before showing form
-            setTimeout(() => {
-                this.sendAssistantMessage("Let me get your details so I can give you specific insights.");
-            }, 300);
-
-            // Show form after brief delay
-            setTimeout(() => {
-                this.showLeadCaptureForm();
-            }, 1500);
-            return;
-        }
-
-        // Get AI response
+        // Get AI response (extraction happens automatically in response handler)
         await this.getAIResponse(message);
     }
 
@@ -210,6 +179,11 @@ class AIDiscoveryWidget {
             }
 
             const data = await response.json();
+
+            // Process extracted contact information from user's message
+            if (data.extractedInfo) {
+                this.updateLeadInfo(data.extractedInfo);
+            }
 
             // Simulate typing delay for more natural feel
             const typingDelay = this.getRandomTypingDelay();
@@ -325,78 +299,67 @@ class AIDiscoveryWidget {
     }
 
     // ==========================================
-    // LEAD CAPTURE
+    // LEAD INFORMATION GATHERING (Natural Extraction)
     // ==========================================
 
-    shouldShowLeadCapture() {
-        return (
-            !this.state.leadCaptured &&
-            this.state.userMessageCount >= this.config.leadCaptureThreshold
-        );
-    }
-
-    showLeadCaptureForm() {
-        this.elements.leadCaptureForm.classList.add('visible');
-        this.elements.leadCaptureForm.style.display = 'block';
-        this.elements.leadName.focus();
-    }
-
-    hideLeadCaptureForm() {
-        this.elements.leadCaptureForm.classList.remove('visible');
-        setTimeout(() => {
-            this.elements.leadCaptureForm.style.display = 'none';
-        }, 300);
-    }
-
-    async handleLeadCapture() {
-        const name = this.elements.leadName.value.trim();
-        const email = this.elements.leadEmail.value.trim();
-        const website = this.elements.leadWebsite.value.trim();
-        const company = this.elements.leadCompany.value.trim();
-
-        if (!name || !email || !website || !company) {
-            alert('Please enter your name, email, website, and company name.');
-            return;
+    updateLeadInfo(extractedInfo) {
+        // Update leadInfo state with any newly extracted information
+        if (!this.state.leadInfo) {
+            this.state.leadInfo = {};
         }
 
-        if (!this.isValidEmail(email)) {
-            alert('Please enter a valid email address.');
-            return;
+        let updated = false;
+
+        // Only update if we don't already have this info
+        if (extractedInfo.name && !this.state.leadInfo.name) {
+            this.state.leadInfo.name = extractedInfo.name;
+            updated = true;
+            console.log('Extracted name:', extractedInfo.name);
         }
 
-        this.state.leadCaptured = true;
-        this.state.leadInfo = { name, email, website, company };
-        this.saveConversationToStorage();
+        if (extractedInfo.email && !this.state.leadInfo.email) {
+            this.state.leadInfo.email = extractedInfo.email;
+            updated = true;
+            console.log('Extracted email:', extractedInfo.email);
+        }
 
-        this.hideLeadCaptureForm();
+        if (extractedInfo.company && !this.state.leadInfo.company) {
+            this.state.leadInfo.company = extractedInfo.company;
+            updated = true;
+            console.log('Extracted company:', extractedInfo.company);
+        }
 
-        // Send confirmation message with company context
-        this.sendAssistantMessage(
-            `Thanks, ${name}! Now let me give you insights specific to ${company}.`
-        );
+        if (extractedInfo.website && !this.state.leadInfo.website) {
+            this.state.leadInfo.website = extractedInfo.website;
+            updated = true;
+            console.log('Extracted website:', extractedInfo.website);
+        }
 
-        // DON'T send email summary yet - wait until conversation actually ends
-        // await this.sendConversationSummary();
+        if (extractedInfo.phone && !this.state.leadInfo.phone) {
+            this.state.leadInfo.phone = extractedInfo.phone;
+            updated = true;
+            console.log('Extracted phone:', extractedInfo.phone);
+        }
 
-        // Continue with AI response to their previous message, including company context
-        const lastUserMessage = this.getLastUserMessage();
-        if (lastUserMessage) {
-            await this.getAIResponse(lastUserMessage);
+        // Save to localStorage if anything was updated
+        if (updated) {
+            this.saveConversationToStorage();
+            console.log('Updated lead info:', this.state.leadInfo);
+        }
+
+        // Mark as lead captured once we have minimum required info (name + email)
+        if (this.state.leadInfo.name && this.state.leadInfo.email && !this.state.leadCaptured) {
+            this.state.leadCaptured = true;
+            console.log('Lead captured! We have name and email');
         }
     }
 
-    isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-
-    getLastUserMessage() {
-        for (let i = this.state.messages.length - 1; i >= 0; i--) {
-            if (this.state.messages[i].role === 'user') {
-                return this.state.messages[i].content;
-            }
-        }
-        return null;
+    hasCompleteLeadInfo() {
+        // Check if we have all critical info
+        return this.state.leadInfo &&
+               this.state.leadInfo.name &&
+               this.state.leadInfo.email &&
+               (this.state.leadInfo.company || this.state.leadInfo.website);
     }
 
     // ==========================================
@@ -408,7 +371,12 @@ class AIDiscoveryWidget {
     }
 
     async sendConversationSummary() {
+        // TEMPORARILY DISABLED - Email sending deactivated while we adjust settings
+        console.log('Email sending temporarily disabled');
+        console.log('Would have sent summary for:', this.state.leadInfo);
+
         // Send conversation transcript to backend for email
+        /* DISABLED
         try {
             await fetch('https://ai-sync-101-website.vercel.app/api/send-summary', {
                 method: 'POST',
@@ -429,6 +397,7 @@ class AIDiscoveryWidget {
         } catch (error) {
             console.error('Error sending summary:', error);
         }
+        */
     }
 
     // ==========================================

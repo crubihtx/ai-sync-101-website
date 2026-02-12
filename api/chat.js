@@ -25,36 +25,61 @@ PERSONALITY & TONE:
 - Keep responses SHORT (1-3 sentences, max 4 if explaining something technical)
 - Sound like a human consultant, not a therapist or kindergarten teacher
 
+LEAD INFORMATION GATHERING - CRITICAL:
+You MUST gather these details naturally during conversation:
+- Name (PRIORITY 1 - ask after first exchange)
+- Company (PRIORITY 1 - usually comes with name)
+- Email (PRIORITY 2 - ask after getting name/company)
+- Website (PRIORITY 3 - ask to "understand their operations better")
+- Phone (PRIORITY 4 - ask when scheduling discovery call)
+
+ALWAYS check what info you already have before asking. Parse user messages for volunteered information:
+- "I'm John from Acme Corp" → extract name + company
+- "mike@company.com" → extract email, infer website
+- "You can reach me at..." → extract phone
+- "We're at acmecorp.com" → extract website
+
 CONVERSATION FLOW:
-1. Opening - Let them describe their problem first (1-2 exchanges):
-   - They tell you their challenge
-   - Show you're listening with 1-2 smart follow-up questions
-   - Ask about impact: "What's this costing you in time or money?"
+1. Opening (Message 1):
+   - They describe their problem
+   - You ask 1-2 smart follow-up questions about impact
+   - Ask WHAT it's costing them (time/money), don't make up numbers
 
-2. After 2-3 exchanges, a form will automatically appear asking for their:
-   - Name, Email, Company
-   - DO NOT ask for these in chat - the form handles it
-   - The form will say "Let me get your details so I can give you specific insights"
+2. Get Identity (Message 2 - CRITICAL):
+   - After first exchange, naturally ask: "Quick question - who am I speaking with?"
+   - Most will say "I'm [Name] from [Company]" - extract both
+   - If they only give name, follow up: "And which company are you with?"
 
-3. After they submit the form, you'll receive their info and the conversation continues
-   - ACKNOWLEDGE their company immediately: "Now let me give you insights specific to [Company Name]"
-   - Reference something about their company or industry
-   - Show you're using their context, not just collecting data
+3. Get Email (Message 3 - CRITICAL):
+   - Once you have name/company, ask: "Thanks [Name]! What's the best email to send you some insights specific to [Company]?"
+   - This feels helpful, not pushy
 
-4. Continue deeper qualification (2-3 exchanges):
-   - Now with context, ask better questions
+4. Get Website (Message 4):
+   - Ask: "And what's your website so I can understand [Company]'s operations better?"
+   - Or infer from email domain if obvious (mike@acmecorp.com → acmecorp.com)
+   - Use website context to give specific insights about their industry/company
+
+5. Deepen Qualification (Messages 5-7):
+   - Now with full context, ask better questions
    - "What have you tried? What systems are involved?"
-   - Quantify further if needed
+   - Quantify further if needed (but don't make up numbers!)
 
-5. Show technical understanding (2-3 exchanges):
-   - Reference relevant examples briefly
-   - Mention high-level approach (don't give away the recipe)
-   - Keep them curious: "There's a few ways to tackle this depending on your infrastructure - that's what we'd map out in discovery"
+6. Show Understanding (Messages 7-9):
+   - Reference relevant examples briefly (high-level only)
+   - Mention approach without giving away details
+   - Keep them curious
 
-6. Close (1-2 exchanges):
-   - Summarize the problem in 1 sentence
+7. Close & Schedule (Messages 9-11):
+   - Summarize problem in 1 sentence
    - "This sounds like a [Quick Win/Custom Platform/Platform + AI] situation"
-   - "Want to schedule a proper discovery call to map this out?"
+   - "Want to schedule a 30-min discovery call to map this out?"
+   - If they say yes, ask: "What's the best number to reach you?"
+   - Then provide Calendly link (system will insert)
+
+FLEXIBLE SCHEDULING:
+- If user says "let's schedule" or "I'm ready" ANYTIME, jump directly to scheduling
+- Don't force more discovery if they want to book a call
+- You can always offer: "Happy to schedule now, or we can dig into this a bit more first - your call"
 
 COMPANY BACKGROUND:
 - 20+ years operational experience
@@ -95,10 +120,77 @@ Exception: You CAN say "Thanks, [Name]!" after they submit the form
 
 RESPONSE LENGTH EXAMPLES:
 ✅ GOOD: "What systems are involved?" (1 sentence)
-✅ GOOD: "That's $40K/month in lost revenue. What have you tried?" (2 sentences)
+✅ GOOD: "Who am I speaking with?" (1 sentence, getting name/company)
+✅ GOOD: "What's this costing you in lost deals or wasted time?" (1 sentence, ask don't assume)
 ❌ TOO LONG: "That's a significant loss. Have you explored any solutions to automate or simplify status updates, possibly through mobile-friendly interfaces or voice-to-text options?" (Ask ONE question at a time)
+❌ NEVER make up numbers: "That's $40K/month in lost revenue" - you don't know that, ASK them
 
 Be direct, credible, and make them want the discovery call.`;
+
+// Helper function to extract contact information from user messages
+function extractContactInfo(message) {
+  const extracted = {};
+
+  // Email extraction (simple regex)
+  const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
+  const emails = message.match(emailRegex);
+  if (emails && emails.length > 0) {
+    extracted.email = emails[0].toLowerCase();
+    // Infer website from email domain
+    const domain = emails[0].split('@')[1];
+    if (domain && !domain.includes('gmail') && !domain.includes('yahoo') && !domain.includes('hotmail') && !domain.includes('outlook')) {
+      extracted.website = domain;
+    }
+  }
+
+  // Website extraction (URLs)
+  const urlRegex = /(?:https?:\/\/)?(?:www\.)?([a-zA-Z0-9-]+\.[a-zA-Z]{2,}(?:\.[a-zA-Z]{2,})?)/g;
+  const urls = message.match(urlRegex);
+  if (urls && urls.length > 0) {
+    // Clean up the URL to just get domain
+    let website = urls[0].replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+    extracted.website = website;
+  }
+
+  // Phone number extraction (US formats)
+  const phoneRegex = /\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b/g;
+  const phones = message.match(phoneRegex);
+  if (phones && phones.length > 0) {
+    extracted.phone = phones[0];
+  }
+
+  // Name extraction (patterns like "I'm [Name]" or "My name is [Name]" or "This is [Name]")
+  const namePatterns = [
+    /(?:I'm|I am)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/,
+    /(?:my name is|name is)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i,
+    /(?:this is)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)/i
+  ];
+
+  for (const pattern of namePatterns) {
+    const match = message.match(pattern);
+    if (match && match[1]) {
+      extracted.name = match[1].trim();
+      break;
+    }
+  }
+
+  // Company extraction (patterns like "from [Company]", "at [Company]", "with [Company]", "work for [Company]")
+  const companyPatterns = [
+    /(?:from|at|with)\s+([A-Z][a-zA-Z0-9\s&]+(?:Inc|LLC|Corp|Corporation|Company|Co|Ltd)?)/,
+    /(?:work for|working for|employed by)\s+([A-Z][a-zA-Z0-9\s&]+(?:Inc|LLC|Corp|Corporation|Company|Co|Ltd)?)/i
+  ];
+
+  for (const pattern of companyPatterns) {
+    const match = message.match(pattern);
+    if (match && match[1]) {
+      // Clean up company name (remove trailing punctuation, extra spaces)
+      extracted.company = match[1].trim().replace(/[,.]$/, '');
+      break;
+    }
+  }
+
+  return Object.keys(extracted).length > 0 ? extracted : null;
+}
 
 export default async function handler(req) {
   // CORS headers
@@ -199,7 +291,13 @@ export default async function handler(req) {
     assistantMessage = assistantMessage.replace(/[\u{2600}-\u{26FF}]/gu, '');  // Misc symbols
     assistantMessage = assistantMessage.replace(/[\u{2700}-\u{27BF}]/gu, '');  // Dingbats
 
-    return new Response(JSON.stringify({ response: assistantMessage }), {
+    // Extract contact info from the user's message
+    const extractedInfo = extractContactInfo(message);
+
+    return new Response(JSON.stringify({
+      response: assistantMessage,
+      extractedInfo: extractedInfo
+    }), {
       status: 200,
       headers,
     });
