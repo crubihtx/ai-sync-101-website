@@ -339,6 +339,9 @@ class AIDiscoveryWidget {
             `Thanks, ${name}! I'll send you a summary and recommendations to ${email}. Let's keep going - what else would you like to know?`
         );
 
+        // Send conversation summary email
+        await this.sendConversationSummary();
+
         // Continue with AI response to their previous message
         const lastUserMessage = this.getLastUserMessage();
         if (lastUserMessage) {
