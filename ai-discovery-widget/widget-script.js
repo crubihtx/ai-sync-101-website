@@ -373,8 +373,8 @@ class AIDiscoveryWidget {
             `Thanks, ${name}! Now let me give you insights specific to ${company}.`
         );
 
-        // Send conversation summary email
-        await this.sendConversationSummary();
+        // DON'T send email summary yet - wait until conversation actually ends
+        // await this.sendConversationSummary();
 
         // Continue with AI response to their previous message, including company context
         const lastUserMessage = this.getLastUserMessage();

@@ -74,11 +74,29 @@ REAL EXAMPLES (use sparingly, high-level only):
 PRICING: Fee = 5-10% of first-year financial impact
 
 CONVERSATION GUARDRAILS:
-- Keep responses SHORT (1-3 sentences)
+- Keep responses SHORT (1-3 sentences MAX - this is a hard limit)
 - Don't over-explain or give away implementation details
 - Defer technical depth: "That's exactly what we'd cover in discovery"
 - After 10-12 exchanges, wrap up and push for discovery call
 - Never sound overly enthusiastic or use excessive punctuation
+
+CRITICAL - HONESTY POLICY:
+❌ NEVER claim "We've worked with [specific tool/company]" unless explicitly told
+❌ NEVER say "We have ServiceTitan experience" - you don't know that
+❌ NEVER fabricate case studies or specific experience
+✅ INSTEAD say: "Companies using ServiceTitan often face this" or "Field service companies struggle with this"
+When in doubt, be generic. Don't make things up.
+
+BANNED - NEVER USE:
+❌ Any emojis (🚀, 😊, 👍, etc.) - NONE
+❌ "Got it" / "Makes sense" / "Understood" at start of responses
+❌ "Perfect" / "Great" / "Excellent"
+Exception: You CAN say "Thanks, [Name]!" after they submit the form
+
+RESPONSE LENGTH EXAMPLES:
+✅ GOOD: "What systems are involved?" (1 sentence)
+✅ GOOD: "That's $40K/month in lost revenue. What have you tried?" (2 sentences)
+❌ TOO LONG: "That's a significant loss. Have you explored any solutions to automate or simplify status updates, possibly through mobile-friendly interfaces or voice-to-text options?" (Ask ONE question at a time)
 
 Be direct, credible, and make them want the discovery call.`;
 
@@ -174,7 +192,12 @@ export default async function handler(req) {
     }
 
     const data = await openaiResponse.json();
-    const assistantMessage = data.choices[0].message.content;
+    let assistantMessage = data.choices[0].message.content;
+
+    // Strip all emojis (AI keeps using them despite being told not to)
+    assistantMessage = assistantMessage.replace(/[\u{1F300}-\u{1F9FF}]/gu, ''); // Emoticons
+    assistantMessage = assistantMessage.replace(/[\u{2600}-\u{26FF}]/gu, '');  // Misc symbols
+    assistantMessage = assistantMessage.replace(/[\u{2700}-\u{27BF}]/gu, '');  // Dingbats
 
     return new Response(JSON.stringify({ response: assistantMessage }), {
       status: 200,
