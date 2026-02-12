@@ -39,6 +39,7 @@ class AIDiscoveryWidget {
             leadCaptureForm: document.getElementById('leadCaptureForm'),
             leadName: document.getElementById('leadName'),
             leadEmail: document.getElementById('leadEmail'),
+            leadWebsite: document.getElementById('leadWebsite'),
             leadCompany: document.getElementById('leadCompany'),
             submitLeadBtn: document.getElementById('submitLeadBtn'),
         };
@@ -350,10 +351,11 @@ class AIDiscoveryWidget {
     async handleLeadCapture() {
         const name = this.elements.leadName.value.trim();
         const email = this.elements.leadEmail.value.trim();
+        const website = this.elements.leadWebsite.value.trim();
         const company = this.elements.leadCompany.value.trim();
 
-        if (!name || !email || !company) {
-            alert('Please enter your name, email, and company name.');
+        if (!name || !email || !website || !company) {
+            alert('Please enter your name, email, website, and company name.');
             return;
         }
 
@@ -363,7 +365,7 @@ class AIDiscoveryWidget {
         }
 
         this.state.leadCaptured = true;
-        this.state.leadInfo = { name, email, company };
+        this.state.leadInfo = { name, email, website, company };
         this.saveConversationToStorage();
 
         this.hideLeadCaptureForm();

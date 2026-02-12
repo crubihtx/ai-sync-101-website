@@ -100,6 +100,7 @@
                     <div class="form-fields">
                         <input type="text" id="leadName" placeholder="Your name" required>
                         <input type="email" id="leadEmail" placeholder="Your email" required>
+                        <input type="url" id="leadWebsite" placeholder="Your website" required>
                         <input type="text" id="leadCompany" placeholder="Company name" required>
                         <div class="form-actions">
                             <button id="submitLeadBtn" class="submit-lead-btn">Continue</button>
