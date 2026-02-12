@@ -485,7 +485,7 @@ class AIDiscoveryWidget {
     }
 
     getInitialGreeting() {
-        return "I'm with AI Sync 101. Tell me your operational challenges and I'll see if we can help.\n\nTo give you relevant insights, I need some quick context: What's your name, email, website, and company name?";
+        return "I'm with AI Sync 101. Tell me your operational challenges and I'll see if we can help.";
     }
 }
 
