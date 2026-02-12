@@ -100,9 +100,9 @@
         // Insert widget HTML
         document.body.insertAdjacentHTML('beforeend', widgetHTML);
 
-        // Load main script
+        // Load main script with cache-busting parameter
         const script = document.createElement('script');
-        script.src = '/ai-discovery-widget/widget-script.js';
+        script.src = '/ai-discovery-widget/widget-script.js?v=' + Date.now();
         script.onload = function() {
             console.log('Widget script loaded successfully');
         };
