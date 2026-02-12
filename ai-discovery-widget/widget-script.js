@@ -9,7 +9,7 @@ class AIDiscoveryWidget {
             apiEndpoint: 'https://ai-sync-101-website.vercel.app/api/chat', // Azure Function endpoint
             autoOpenDelay: 5000, // Auto-open after 5 seconds
             maxMessages: 30, // Maximum conversation length (15 exchanges = 30 messages)
-            leadCaptureThreshold: 7, // Ask for contact info after 7 messages from user
+            leadCaptureThreshold: 3, // Ask for contact info after 3 messages from user (early qualification)
             typingDelay: { min: 800, max: 2000 }, // Typing indicator duration
         };
 
@@ -39,6 +39,7 @@ class AIDiscoveryWidget {
             leadCaptureForm: document.getElementById('leadCaptureForm'),
             leadName: document.getElementById('leadName'),
             leadEmail: document.getElementById('leadEmail'),
+            leadCompany: document.getElementById('leadCompany'),
             submitLeadBtn: document.getElementById('submitLeadBtn'),
         };
 
@@ -170,7 +171,15 @@ class AIDiscoveryWidget {
 
         // Check if we should show lead capture form
         if (this.shouldShowLeadCapture()) {
-            this.showLeadCaptureForm();
+            // AI message before showing form
+            setTimeout(() => {
+                this.sendAssistantMessage("Let me get your details so I can give you specific insights.");
+            }, 300);
+
+            // Show form after brief delay
+            setTimeout(() => {
+                this.showLeadCaptureForm();
+            }, 1500);
             return;
         }
 
@@ -341,9 +350,10 @@ class AIDiscoveryWidget {
     async handleLeadCapture() {
         const name = this.elements.leadName.value.trim();
         const email = this.elements.leadEmail.value.trim();
+        const company = this.elements.leadCompany.value.trim();
 
-        if (!name || !email) {
-            alert('Please enter both your name and email.');
+        if (!name || !email || !company) {
+            alert('Please enter your name, email, and company name.');
             return;
         }
 
@@ -353,20 +363,20 @@ class AIDiscoveryWidget {
         }
 
         this.state.leadCaptured = true;
-        this.state.leadInfo = { name, email };
+        this.state.leadInfo = { name, email, company };
         this.saveConversationToStorage();
 
         this.hideLeadCaptureForm();
 
-        // Send confirmation message
+        // Send confirmation message with company context
         this.sendAssistantMessage(
-            `Thanks, ${name}! I'll send you a summary and recommendations to ${email}. Let's keep going - what else would you like to know?`
+            `Thanks, ${name}! Now let me give you insights specific to ${company}.`
         );
 
         // Send conversation summary email
         await this.sendConversationSummary();
 
-        // Continue with AI response to their previous message
+        // Continue with AI response to their previous message, including company context
         const lastUserMessage = this.getLastUserMessage();
         if (lastUserMessage) {
             await this.getAIResponse(lastUserMessage);

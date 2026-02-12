@@ -94,14 +94,15 @@
                 <!-- Lead Capture Form -->
                 <div class="lead-capture-form" id="leadCaptureForm" style="display: none;">
                     <div class="form-header">
-                        <h4>Let's stay connected</h4>
-                        <p>Get a personalized summary and recommendations</p>
+                        <h4>Let's get your details</h4>
+                        <p>So I can give you specific insights</p>
                     </div>
                     <div class="form-fields">
                         <input type="text" id="leadName" placeholder="Your name" required>
                         <input type="email" id="leadEmail" placeholder="Your email" required>
+                        <input type="text" id="leadCompany" placeholder="Company name" required>
                         <div class="form-actions">
-                            <button id="submitLeadBtn" class="submit-lead-btn">Send Summary</button>
+                            <button id="submitLeadBtn" class="submit-lead-btn">Continue</button>
                         </div>
                     </div>
                 </div>
