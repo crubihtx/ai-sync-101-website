@@ -39,10 +39,13 @@
                 <!-- Chat Header -->
                 <div class="chat-header">
                     <div class="header-content">
-                        <div class="header-logo-placeholder" style="width: 40px; height: 40px; background: linear-gradient(135deg, #00A3FF 0%, #FF1F8F 100%); border-radius: 8px;"></div>
+                        <img src="/assets/logo.png" alt="AI Sync 101" class="header-logo">
                         <div class="header-text">
                             <h3>AI Sync 101</h3>
-                            <p class="header-status" id="headerStatus">Discovery Assistant</p>
+                            <p class="header-status" id="headerStatus">
+                                <span class="status-indicator"></span>
+                                Online now
+                            </p>
                         </div>
                     </div>
                     <div class="header-actions">
