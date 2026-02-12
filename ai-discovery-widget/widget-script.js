@@ -485,7 +485,7 @@ class AIDiscoveryWidget {
     }
 
     getInitialGreeting() {
-        return "Hey! I'm with AI Sync 101. We help mid-market companies solve expensive operational problems through custom platforms and automation.\n\nQuick question to get started - what's the biggest operational bottleneck that's costing your business time or money right now?";
+        return "I'm with AI Sync 101. Tell me your operational challenges and I'll see if we can help.\n\nTo give you relevant insights, I need some quick context: What's your name, email, website, and company name?";
     }
 }
 
