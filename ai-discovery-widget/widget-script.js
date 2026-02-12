@@ -421,7 +421,7 @@ class AIDiscoveryWidget {
             });
 
             this.sendAssistantMessage(
-                "This has been a great conversation! I've sent a summary to our team, and they'll reach out to you shortly with more detailed recommendations. Looking forward to working with you! 🚀"
+                "I've sent a summary to our team. They'll reach out within 24 hours with next steps."
             );
 
         } catch (error) {
