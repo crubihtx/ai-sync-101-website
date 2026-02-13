@@ -1,15 +1,14 @@
 /**
  * CONVERSATION TRACKER - VERCEL EDGE FUNCTION
  * Receives completed conversations and sends summary emails via Resend
+ * Using fetch API instead of Resend SDK for Edge Runtime compatibility
  */
 
 export const config = {
   runtime: 'edge',
 };
 
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
 
 // ==========================================
@@ -391,14 +390,28 @@ export default async function handler(req) {
     // Generate email HTML
     const htmlContent = generateEmailHTML(analysis, messages, metadata);
 
-    // Send email via Resend
-    const result = await resend.emails.send({
-      from: 'AI Discovery Widget <widget@aisync101.com>',
-      to: TEAM_EMAIL,
-      subject: subject,
-      html: htmlContent,
+    // Send email via Resend API (using fetch for Edge Runtime compatibility)
+    const emailResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'AI Discovery Widget <onboarding@resend.dev>',
+        to: TEAM_EMAIL,
+        subject: subject,
+        html: htmlContent,
+      }),
     });
 
+    if (!emailResponse.ok) {
+      const error = await emailResponse.text();
+      console.error('Resend API error:', error);
+      throw new Error(`Failed to send email: ${error}`);
+    }
+
+    const result = await emailResponse.json();
     console.log('Email sent successfully:', result);
 
     return new Response(JSON.stringify({
