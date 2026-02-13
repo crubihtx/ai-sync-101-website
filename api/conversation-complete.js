@@ -407,8 +407,29 @@ export default async function handler(req) {
 
     if (!emailResponse.ok) {
       const error = await emailResponse.text();
-      console.error('Resend API error:', error);
-      throw new Error(`Failed to send email: ${error}`);
+      console.error('Resend API error - Status:', emailResponse.status);
+      console.error('Resend API error - Response:', error);
+      console.error('API Key being used:', RESEND_API_KEY ? `${RESEND_API_KEY.substring(0, 8)}...` : 'MISSING');
+      console.error('Request body:', JSON.stringify({
+        from: 'AI Discovery Widget <widget@aisync101.com>',
+        to: [TEAM_EMAIL],
+        subject: subject,
+      }));
+
+      // Return detailed error to user
+      return new Response(JSON.stringify({
+        error: 'Failed to send email',
+        status: emailResponse.status,
+        details: error,
+        apiKeyPresent: !!RESEND_API_KEY,
+        teamEmail: TEAM_EMAIL
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        }
+      });
     }
 
     const result = await emailResponse.json();
