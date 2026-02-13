@@ -23,5 +23,7 @@
     "url": "https://github.com/yourusername/ai-sync-101-website.git"
   },
   "devDependencies": {},
-  "dependencies": {}
+  "dependencies": {
+    "resend": "^3.0.0"
+  }
 }

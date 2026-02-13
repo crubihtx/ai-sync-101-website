@@ -6,8 +6,8 @@ class AIDiscoveryWidget {
     constructor() {
         // Configuration
         this.config = {
-            apiEndpoint: 'https://ai-sync-101-website.vercel.app/api/chat', // Azure Function endpoint
-            trackerEndpoint: 'https://conversation-tracker-xxxx.onrender.com/api/conversation-complete', // TODO: Replace with actual Render URL
+            apiEndpoint: 'https://ai-sync-101-website.vercel.app/api/chat',
+            trackerEndpoint: 'https://ai-sync-101-website.vercel.app/api/conversation-complete', // Vercel endpoint
             autoOpenDelay: 5000, // Auto-open after 5 seconds
             maxMessages: 30, // Maximum conversation length (15 exchanges = 30 messages)
             leadCaptureThreshold: 3, // Ask for contact info after 3 messages from user (early qualification)
