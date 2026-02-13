@@ -8,9 +8,6 @@ export const config = {
   runtime: 'edge',
 };
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
-
 // ==========================================
 // CONVERSATION ANALYZER
 // ==========================================
@@ -364,6 +361,10 @@ export default async function handler(req) {
   }
 
   try {
+    // Read environment variables INSIDE the handler for Edge Functions
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
+
     const { messages, metadata } = await req.json();
 
     if (!messages || !Array.isArray(messages) || messages.length < 10) {
