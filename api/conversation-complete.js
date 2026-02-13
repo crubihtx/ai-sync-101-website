@@ -354,8 +354,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Read environment variables INSIDE the handler for Edge Functions
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    // Try multiple environment variable names (Vercel sometimes has issues with certain names)
+    const RESEND_API_KEY = process.env.RESEND_KEY || process.env.RESEND_API_KEY;
     const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
 
     const { messages, metadata } = req.body;
