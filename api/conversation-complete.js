@@ -1,12 +1,10 @@
 /**
- * CONVERSATION TRACKER - VERCEL EDGE FUNCTION
+ * CONVERSATION TRACKER - VERCEL SERVERLESS FUNCTION
  * Receives completed conversations and sends summary emails via Resend
- * Using fetch API instead of Resend SDK for Edge Runtime compatibility
+ * Using Node.js runtime for proper environment variable support
  */
 
-export const config = {
-  runtime: 'edge',
-};
+// Removed edge config - using default Node.js runtime for env var access
 
 // ==========================================
 // CONVERSATION ANALYZER
