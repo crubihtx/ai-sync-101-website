@@ -1,0 +1,21 @@
+{
+  "name": "conversation-tracker",
+  "version": "1.0.0",
+  "description": "AI Sync 101 - Conversation tracking and email notification service",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node index.js"
+  },
+  "keywords": ["conversation", "email", "automation"],
+  "author": "AI Sync 101",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "resend": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

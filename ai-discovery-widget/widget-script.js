@@ -7,10 +7,12 @@ class AIDiscoveryWidget {
         // Configuration
         this.config = {
             apiEndpoint: 'https://ai-sync-101-website.vercel.app/api/chat', // Azure Function endpoint
+            trackerEndpoint: 'https://conversation-tracker-xxxx.onrender.com/api/conversation-complete', // TODO: Replace with actual Render URL
             autoOpenDelay: 5000, // Auto-open after 5 seconds
             maxMessages: 30, // Maximum conversation length (15 exchanges = 30 messages)
             leadCaptureThreshold: 3, // Ask for contact info after 3 messages from user (early qualification)
             typingDelay: { min: 800, max: 2000 }, // Typing indicator duration
+            idleTimeout: 10 * 60 * 1000, // 10 minutes idle = conversation end
         };
 
         // State
@@ -22,6 +24,9 @@ class AIDiscoveryWidget {
             leadInfo: null,
             messageCount: 0,
             userMessageCount: 0,
+            lastUserMessageTime: null,
+            idleTimer: null,
+            conversationSent: false, // Track if we've sent this conversation to tracker
         };
 
         // DOM Elements
@@ -218,6 +223,8 @@ class AIDiscoveryWidget {
 
         if (role === 'user') {
             this.state.userMessageCount++;
+            this.state.lastUserMessageTime = Date.now();
+            this.resetIdleTimer(); // Reset idle detection on each user message
         }
 
         this.renderMessage(message);
@@ -367,37 +374,98 @@ class AIDiscoveryWidget {
     // ==========================================
 
     shouldEndConversation() {
-        return this.state.messageCount >= this.config.maxMessages;
+        // End if max messages reached
+        if (this.state.messageCount >= this.config.maxMessages) {
+            return true;
+        }
+
+        // Don't end if less than 10 messages (too short to be useful)
+        if (this.state.messages.length < 10) {
+            return false;
+        }
+
+        // Check for explicit goodbye
+        const lastUserMessage = this.state.messages
+            .filter(m => m.role === 'user')
+            .slice(-1)[0];
+
+        if (lastUserMessage) {
+            const goodbyePhrases = ['thanks', 'thank you', 'goodbye', 'bye', 'talk soon', 'ttyl'];
+            const content = lastUserMessage.content.toLowerCase();
+            if (goodbyePhrases.some(phrase => content.includes(phrase))) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
-    async sendConversationSummary() {
-        // TEMPORARILY DISABLED - Email sending deactivated while we adjust settings
-        console.log('Email sending temporarily disabled');
-        console.log('Would have sent summary for:', this.state.leadInfo);
+    resetIdleTimer() {
+        // Clear existing timer
+        if (this.state.idleTimer) {
+            clearTimeout(this.state.idleTimer);
+        }
 
-        // Send conversation transcript to backend for email
-        /* DISABLED
+        // Don't set idle timer if conversation already sent or too short
+        if (this.state.conversationSent || this.state.messages.length < 10) {
+            return;
+        }
+
+        // Set new timer
+        this.state.idleTimer = setTimeout(() => {
+            console.log('Conversation idle for 10 minutes - sending to tracker');
+            this.sendConversationSummary('idle');
+        }, this.config.idleTimeout);
+    }
+
+    async sendConversationSummary(reason = 'completed') {
+        // Don't send if already sent or conversation too short
+        if (this.state.conversationSent || this.state.messages.length < 10) {
+            console.log('Skipping summary - already sent or too short');
+            return;
+        }
+
+        this.state.conversationSent = true;
+        console.log(`Sending conversation summary (reason: ${reason})`);
+        console.log('Lead info:', this.state.leadInfo);
+
+        // Send conversation to tracker service
         try {
-            await fetch('https://ai-sync-101-website.vercel.app/api/send-summary', {
+            const response = await fetch(this.config.trackerEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    conversationId: this.state.conversationId,
                     messages: this.state.messages,
-                    leadInfo: this.state.leadInfo,
+                    metadata: {
+                        conversationId: this.state.conversationId,
+                        endReason: reason,
+                        leadInfo: this.state.leadInfo,
+                        source: 'widget',
+                        url: window.location.href,
+                    },
                 }),
             });
 
-            this.sendAssistantMessage(
-                "I've sent a summary to our team. They'll reach out within 24 hours with next steps."
-            );
+            if (response.ok) {
+                const result = await response.json();
+                console.log('Conversation sent to tracker:', result);
+
+                // Only show message to user if conversation ended explicitly (not on idle)
+                if (reason !== 'idle') {
+                    this.sendAssistantMessage(
+                        "Someone from our team will reach out to coordinate next steps. Talk soon!"
+                    );
+                }
+            } else {
+                console.error('Failed to send conversation to tracker:', response.status);
+            }
 
         } catch (error) {
-            console.error('Error sending summary:', error);
+            console.error('Error sending conversation to tracker:', error);
+            // Fail silently - don't disrupt user experience
         }
-        */
     }
 
     // ==========================================
