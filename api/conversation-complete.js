@@ -365,6 +365,9 @@ export default async function handler(req, res) {
     }
 
     console.log(`Processing conversation with ${messages.length} messages`);
+    console.log('DEBUG - All env vars:', Object.keys(process.env));
+    console.log('DEBUG - RESEND_API_KEY exists?', !!RESEND_API_KEY);
+    console.log('DEBUG - TEAM_EMAIL:', TEAM_EMAIL);
 
     // Analyze conversation
     const analysis = analyzeConversation(messages);
