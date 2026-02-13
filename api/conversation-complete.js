@@ -398,7 +398,7 @@ export default async function handler(req) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'Acme <onboarding@resend.dev>',
+        from: 'AI Discovery Widget <widget@aisync101.com>',
         to: [TEAM_EMAIL],
         subject: subject,
         html: htmlContent,
