@@ -398,8 +398,8 @@ export default async function handler(req) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'AI Discovery Widget <onboarding@resend.dev>',
-        to: TEAM_EMAIL,
+        from: 'Acme <onboarding@resend.dev>',
+        to: [TEAM_EMAIL],
         subject: subject,
         html: htmlContent,
       }),
