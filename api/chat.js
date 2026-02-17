@@ -479,7 +479,28 @@ RESPONSE LENGTH:
 ❌ TOO LONG: Multiple questions or over-explaining in one message
 ❌ NEVER make up numbers: "That's $40K/month in lost revenue" - ASK them to quantify
 
-Be direct, credible, conversational, and make them want the discovery call.`;
+Be direct, credible, conversational, and make them want the discovery call.
+
+HIDDEN DATA EXTRACTION - MANDATORY ON EVERY RESPONSE:
+
+After your conversational response, append this tag on its own line. The system strips it before the user sees it — they will NEVER see this tag.
+
+<!--EXTRACT:{"name":null,"company":null,"email":null,"phone":null,"website":null,"problem":null,"intent":"exploring"}-->
+
+Rules for the tag:
+- Fill in ALL values you have learned SO FAR across the entire conversation. Use null (not empty string) for fields not yet known.
+- "name": first or full name as stated by the visitor (e.g. "Carlos")
+- "company": company name as stated (e.g. "LAComputech")
+- "email": exact email address (e.g. "carlos@computech.support")
+- "phone": exact phone number (e.g. "225-892-2135")
+- "website": domain or URL they mentioned (e.g. "computech.support")
+- "problem": one sentence summary of their PRIMARY pain point — update and refine this as you learn more, null if not yet clear
+- "intent": exactly one of "exploring" (describing problem) | "interested" (engaged with solutions) | "ready_to_book" (said yes to a call)
+- The tag must be valid JSON — double quotes, null for missing values, no trailing commas
+- The tag goes at the very END of your response, after all conversational text, on its own line
+- NEVER mention this tag to the user or acknowledge it exists
+- NEVER let it appear mid-sentence or mid-paragraph
+- If the visitor corrects something earlier, update the tag with the corrected value`;
 
 // Helper function to extract contact information from user messages
 function extractContactInfo(message) {
@@ -569,7 +590,7 @@ export default async function handler(req) {
   }
 
   try {
-    const { message, messages } = await req.json();
+    const { message, messages, leadInfo } = await req.json();
 
     if (!message) {
       return new Response(JSON.stringify({ error: 'Message is required' }), {
@@ -592,6 +613,18 @@ export default async function handler(req) {
     const conversationHistory = [
       { role: 'system', content: SYSTEM_PROMPT }
     ];
+
+    // Inject accumulated lead info as a second system message so AI doesn't re-ask for known info
+    if (leadInfo && Object.keys(leadInfo).some(k => leadInfo[k])) {
+      const knownFields = Object.entries(leadInfo)
+        .filter(([_, v]) => v)
+        .map(([k, v]) => `- ${k}: ${v}`)
+        .join('\n');
+      conversationHistory.push({
+        role: 'system',
+        content: `WHAT YOU ALREADY KNOW ABOUT THIS VISITOR:\n${knownFields}\n\nDo not ask for information already listed above. Use it to skip ahead and go deeper.`
+      });
+    }
 
     // Add ALL previous messages (full conversation context - we'll optimize later if needed)
     if (messages && messages.length > 0) {
@@ -620,7 +653,7 @@ export default async function handler(req) {
         model: 'gpt-4-turbo-preview',
         messages: conversationHistory,
         temperature: 0.7,
-        max_tokens: 300, // Keep responses concise
+        max_tokens: 500, // Extra headroom for hidden EXTRACT tag (~150 tokens)
         top_p: 1,
         frequency_penalty: 0.3,
         presence_penalty: 0.3,
@@ -644,8 +677,28 @@ export default async function handler(req) {
     assistantMessage = assistantMessage.replace(/[\u{2600}-\u{26FF}]/gu, '');  // Misc symbols
     assistantMessage = assistantMessage.replace(/[\u{2700}-\u{27BF}]/gu, '');  // Dingbats
 
-    // Extract contact info from the user's message
-    const extractedInfo = extractContactInfo(message);
+    // Extract AI-embedded hidden tag, then strip it before showing user
+    let extractedInfo = null;
+    const tagMatch = assistantMessage.match(/<!--EXTRACT:([\s\S]*?)-->/);
+
+    if (tagMatch) {
+      try {
+        extractedInfo = JSON.parse(tagMatch[1].trim());
+        // Remove null fields — widget only updates fields it doesn't already have
+        Object.keys(extractedInfo).forEach(k => {
+          if (extractedInfo[k] === null) delete extractedInfo[k];
+        });
+      } catch (e) {
+        console.error('Failed to parse EXTRACT tag JSON:', e);
+        extractedInfo = extractContactInfo(message); // regex fallback
+      }
+      // Strip the tag (and any leading newline before it) from the visible response
+      assistantMessage = assistantMessage.replace(/\n?<!--EXTRACT:[\s\S]*?-->/g, '').trim();
+    } else {
+      // AI forgot to include the tag — fall back to regex on user's message
+      console.warn('AI response missing EXTRACT tag, falling back to regex extraction');
+      extractedInfo = extractContactInfo(message);
+    }
 
     return new Response(JSON.stringify({
       response: assistantMessage,

@@ -341,6 +341,82 @@ ${formatTranscript(messages)}
 }
 
 // ==========================================
+// AI-POWERED CONVERSATION ANALYSIS
+// ==========================================
+
+async function analyzeConversationWithAI(messages, openaiApiKey) {
+  const transcript = messages
+    .map(m => `${m.role === 'user' ? 'VISITOR' : 'AI_AGENT'}: ${m.content}`)
+    .join('\n\n');
+
+  const prompt = `Analyze this sales discovery conversation and return ONLY a raw JSON object with no markdown, no code blocks, just the JSON.
+
+Use this exact structure:
+{
+  "contactInfo": { "name": null, "company": null, "email": null, "phone": null, "website": null },
+  "mainProblem": null,
+  "identifiedProblems": [],
+  "currentWorkflow": null,
+  "proposedSolution": null,
+  "quantifiedImpact": [],
+  "engagementLevel": "low",
+  "wantsToSchedule": false
+}
+
+Rules:
+- contactInfo: extract exact values from the conversation, null if not mentioned
+- mainProblem: one sentence describing the PRIMARY pain point the visitor focused on, null if not identified
+- identifiedProblems: array of all problems mentioned (can be empty)
+- currentWorkflow: short description of their current broken process, null if not discussed
+- proposedSolution: short description of the proposed automated solution, null if not discussed
+- quantifiedImpact: array of strings with any numbers/costs/times mentioned (e.g. ["$3,000/month", "1 month delay"])
+- engagementLevel: "high" if agreed to schedule AND shared phone, "medium" if shared email or strong interest, "low" otherwise
+- wantsToSchedule: true if they explicitly agreed to or asked about scheduling a call
+
+CONVERSATION TRANSCRIPT:
+${transcript}`;
+
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${openaiApiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4-turbo-preview',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.1,
+      max_tokens: 800
+    })
+  });
+
+  if (!res.ok) {
+    throw new Error(`OpenAI analysis failed with status ${res.status}`);
+  }
+
+  const aiData = await res.json();
+  let jsonStr = aiData.choices[0].message.content.trim();
+
+  // Strip markdown code blocks if AI added them despite instructions
+  const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) jsonStr = codeBlockMatch[1];
+
+  const parsed = JSON.parse(jsonStr);
+
+  // Return with safe defaults in case any field is missing
+  return {
+    contactInfo: parsed.contactInfo || {},
+    mainProblem: parsed.mainProblem || null,
+    identifiedProblems: parsed.identifiedProblems || [],
+    currentWorkflow: parsed.currentWorkflow || null,
+    proposedSolution: parsed.proposedSolution || null,
+    quantifiedImpact: parsed.quantifiedImpact || [],
+    engagementLevel: parsed.engagementLevel || 'unknown',
+    wantsToSchedule: parsed.wantsToSchedule || false,
+  };
+}
+
+// ==========================================
 // MAIN HANDLER
 // ==========================================
 
@@ -379,8 +455,33 @@ export default async function handler(req, res) {
 
     console.log(`Processing conversation with ${messages.length} messages`);
 
-    // Analyze conversation
-    const analysis = analyzeConversation(messages);
+    // Analyze conversation — use AI if key is available, fall back to regex
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    let analysis;
+
+    if (OPENAI_API_KEY) {
+      try {
+        console.log('Running AI-powered conversation analysis...');
+        analysis = await analyzeConversationWithAI(messages, OPENAI_API_KEY);
+        console.log('AI analysis complete. Contact:', JSON.stringify(analysis.contactInfo));
+      } catch (aiError) {
+        console.error('AI analysis failed, falling back to regex:', aiError.message);
+        analysis = analyzeConversation(messages);
+      }
+    } else {
+      console.warn('OPENAI_API_KEY not set, using regex analysis');
+      analysis = analyzeConversation(messages);
+    }
+
+    // Merge frontend-accumulated leadInfo as safety net (fills any gaps AI missed)
+    if (metadata?.leadInfo) {
+      const f = metadata.leadInfo;
+      if (f.name && !analysis.contactInfo.name) analysis.contactInfo.name = f.name;
+      if (f.email && !analysis.contactInfo.email) analysis.contactInfo.email = f.email;
+      if (f.company && !analysis.contactInfo.company) analysis.contactInfo.company = f.company;
+      if (f.phone && !analysis.contactInfo.phone) analysis.contactInfo.phone = f.phone;
+      if (f.website && !analysis.contactInfo.website) analysis.contactInfo.website = f.website;
+    }
 
     // Generate email subject
     const subject = analysis.contactInfo.name && analysis.contactInfo.company
