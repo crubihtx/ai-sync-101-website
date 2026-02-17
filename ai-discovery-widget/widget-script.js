@@ -1058,16 +1058,18 @@ html,body{
   margin-bottom:48px;padding-bottom:32px;
   border-bottom:1px solid rgba(255,255,255,0.1);
 }
-.doc-logo{height:32px;width:auto}
+.doc-logo{height:48px;width:auto}
 .doc-type{
   font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  white-space:nowrap;
   background:linear-gradient(135deg,#00A3FF,#FF1F8F);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-.doc-date{font-size:12px;color:#666;margin-top:4px;text-align:right}
+.doc-date{font-size:12px;color:#666;margin-top:4px;text-align:right;white-space:nowrap}
 /* HERO */
 .hero{margin-bottom:48px}
 .hero h1{
+  display:inline-block;
   font-size:30px;font-weight:700;line-height:1.2;margin-bottom:8px;
   background:linear-gradient(135deg,#00A3FF 0%,#FF1F8F 100%);
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -1124,25 +1126,29 @@ html,body{
   color:#7B2FFF;white-space:nowrap;margin-top:2px;flex-shrink:0;
 }
 /* TIMELINE */
-.timeline{display:flex;flex-direction:column}
-.tl-item{display:flex;gap:0;margin-bottom:0}
+.timeline{display:block}
+.tl-item{
+  position:relative;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.1);
+  border-left:4px solid #00A3FF;
+  border-radius:16px;
+  padding:18px 22px 18px 68px;
+  margin-bottom:12px;
+}
 .tl-dot{
-  display:flex;flex-direction:column;align-items:center;
-  width:44px;flex-shrink:0;
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
 }
 .tl-dot span{
-  width:36px;height:36px;border-radius:50%;
+  display:block;
+  width:34px;height:34px;line-height:34px;text-align:center;
+  border-radius:50%;
   background:linear-gradient(135deg,#00A3FF,#7B2FFF);
-  display:flex;align-items:center;justify-content:center;
   font-size:12px;font-weight:700;color:#fff;
-  flex-shrink:0;
 }
-.tl-line{
-  width:2px;background:linear-gradient(to bottom,#00A3FF,#7B2FFF);
-  flex:1;margin:4px auto 0;min-height:32px;
-}
-.tl-line-last{background:none}
-.tl-body{padding:4px 0 28px 18px}
+.tl-line{display:none}
+.tl-line-last{display:none}
+.tl-body{display:block}
 .tl-title{font-size:15px;font-weight:600;color:#FFF;margin-bottom:4px}
 .tl-desc{font-size:13px;color:#888;line-height:1.6}
 /* TRANSCRIPT */
