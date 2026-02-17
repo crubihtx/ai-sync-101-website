@@ -1075,7 +1075,7 @@ html,body{
 }
 .hero-sub{font-size:14px;color:#666}
 /* SECTION */
-.section{margin-bottom:28px}
+.section{margin-bottom:28px;page-break-inside:avoid}
 .section-label{
   font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
   color:#00A3FF;margin-bottom:14px;
@@ -1099,6 +1099,7 @@ html,body{
   border-left:4px solid #00A3FF;
   border-radius:16px;padding:22px 26px;
   color:#CCC;font-size:14px;line-height:1.75;
+  page-break-inside:avoid;
 }
 /* WORKFLOW */
 .wf-grid{display:flex;gap:14px;margin-bottom:14px}
@@ -1107,6 +1108,7 @@ html,body{
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.1);
   border-radius:16px;padding:18px 22px;
+  page-break-inside:avoid;
 }
 .wf-current{border-left:4px solid #FF1F8F}
 .wf-proposed{border-left:4px solid #00A3FF}
@@ -1119,6 +1121,7 @@ html,body{
   background:rgba(123,47,255,0.1);border:1px solid rgba(123,47,255,0.25);
   border-radius:12px;padding:14px 18px;
   font-size:13px;color:#CCC;line-height:1.6;
+  page-break-inside:avoid;
 }
 .key-change-label{
   font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;
@@ -1134,6 +1137,7 @@ html,body{
   border-radius:16px;
   padding:18px 22px 18px 68px;
   margin-bottom:12px;
+  page-break-inside:avoid;
 }
 .tl-dot{
   position:absolute;left:16px;top:50%;transform:translateY(-50%);
@@ -1163,6 +1167,7 @@ html,body{
   background:rgba(255,255,255,0.03);
   border:1px solid rgba(255,255,255,0.07);
   border-radius:12px;padding:14px 18px;margin-bottom:10px;
+  page-break-inside:avoid;
 }
 .msg-user{border-left:3px solid #00A3FF}
 .msg-ai{border-left:3px solid #7B2FFF}
