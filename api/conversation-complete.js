@@ -362,7 +362,7 @@ export default async function handler(req) {
 
   try {
     // Access environment variables in Edge Runtime
-    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    const RESEND_API_KEY = process.env.RESEND_KEY; // Matches RESEND_KEY in Vercel
     const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
 
     const { messages, metadata } = await req.json();
