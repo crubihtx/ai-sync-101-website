@@ -390,7 +390,7 @@ class AIDiscoveryWidget {
             .slice(-1)[0];
 
         if (lastUserMessage) {
-            const goodbyePhrases = ['thanks', 'thank you', 'goodbye', 'bye', 'talk soon', 'ttyl'];
+            const goodbyePhrases = ['goodbye', 'bye', 'talk soon', 'ttyl'];
             const content = lastUserMessage.content.toLowerCase();
             if (goodbyePhrases.some(phrase => content.includes(phrase))) {
                 return true;
@@ -452,12 +452,7 @@ class AIDiscoveryWidget {
                 const result = await response.json();
                 console.log('Conversation sent to tracker:', result);
 
-                // Only show message to user if conversation ended explicitly (not on idle)
-                if (reason !== 'idle') {
-                    this.sendAssistantMessage(
-                        "Someone from our team will reach out to coordinate next steps. Talk soon!"
-                    );
-                }
+                // AI handles all messaging — widget sends nothing to the user on conversation end
             } else {
                 console.error('Failed to send conversation to tracker:', response.status);
             }
