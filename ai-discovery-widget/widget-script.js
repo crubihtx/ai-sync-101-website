@@ -1302,17 +1302,15 @@ if (!isMobile) {
                 'display:flex','align-items:center','justify-content:space-between',
                 'gap:12px'
             ].join(';');
-            closeBar.innerHTML = \`
-                <span style="font-family:Inter,sans-serif;font-size:13px;color:#888">
-                    Use your browser's share menu to save as PDF
-                </span>
-                <button onclick="document.getElementById('pdf-overlay').remove()" style="
-                    padding:8px 16px;border:1px solid rgba(255,255,255,0.2);
-                    border-radius:8px;background:transparent;color:#fff;
-                    font-family:Inter,sans-serif;font-size:13px;cursor:pointer;
-                    white-space:nowrap;
-                ">× Close</button>
-            \`;
+            closeBar.innerHTML =
+                '<span style="font-family:Inter,sans-serif;font-size:13px;color:#888">' +
+                "Use your browser's share menu to save as PDF" +
+                '</span>' +
+                '<button onclick="document.getElementById(\'pdf-overlay\').remove()" style="' +
+                'padding:8px 16px;border:1px solid rgba(255,255,255,0.2);' +
+                'border-radius:8px;background:transparent;color:#fff;' +
+                'font-family:Inter,sans-serif;font-size:13px;cursor:pointer;white-space:nowrap;">' +
+                '\u00d7 Close</button>';
 
             // iframe to render the HTML safely
             const iframe = document.createElement('iframe');
