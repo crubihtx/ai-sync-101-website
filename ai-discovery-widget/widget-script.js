@@ -1039,12 +1039,12 @@ html,body{
 }
 @media print{
   html,body{background:#0A0A0A!important}
-  @page{margin:1in;size:letter}
+  @page{margin:0;size:letter}
   .no-print{display:none!important}
   .avoid-break{page-break-inside:avoid}
 }
 /* PAGE */
-.page{width:100%;max-width:624px;margin:0 auto;padding:40px 0 48px;box-sizing:border-box}
+.page{width:100%;max-width:816px;margin:0 auto;padding:72px 96px 72px;box-sizing:border-box}
 /* GRADIENT BAR */
 .gradient-bar{
   height:4px;
@@ -1187,7 +1187,7 @@ html,body{
 .footer-note{font-size:11px;color:#444}
 /* MOBILE */
 @media screen and (max-width:680px){
-  .page{padding:24px 20px 40px}
+  .page{padding:32px 24px 48px}
   .doc-header{flex-wrap:wrap;gap:12px}
   .doc-meta{text-align:left}
   .wf-grid{flex-direction:column}
