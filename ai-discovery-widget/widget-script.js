@@ -1039,13 +1039,12 @@ html,body{
 }
 @media print{
   html,body{background:#0A0A0A!important}
-  @page{margin:0;size:A4}
+  @page{margin:16mm 14mm;size:A4}
   .no-print{display:none!important}
-  .page-break-before{page-break-before:always}
   .avoid-break{page-break-inside:avoid}
 }
 /* PAGE */
-.page{max-width:760px;margin:0 auto;padding:48px 48px 72px}
+.page{width:100%;max-width:794px;margin:0 auto;padding:48px 48px 48px;box-sizing:border-box}
 /* GRADIENT BAR */
 .gradient-bar{
   height:4px;
@@ -1055,7 +1054,7 @@ html,body{
 /* HEADER */
 .doc-header{
   display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:48px;padding-bottom:32px;
+  margin-bottom:32px;padding-bottom:24px;
   border-bottom:1px solid rgba(255,255,255,0.1);
 }
 .doc-logo{height:48px;width:auto}
@@ -1067,7 +1066,7 @@ html,body{
 }
 .doc-date{font-size:12px;color:#666;margin-top:4px;text-align:right;white-space:nowrap}
 /* HERO */
-.hero{margin-bottom:48px}
+.hero{margin-bottom:32px}
 .hero h1{
   display:inline-block;
   font-size:30px;font-weight:700;line-height:1.2;margin-bottom:8px;
@@ -1076,7 +1075,7 @@ html,body{
 }
 .hero-sub{font-size:14px;color:#666}
 /* SECTION */
-.section{margin-bottom:40px}
+.section{margin-bottom:28px}
 .section-label{
   font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
   color:#00A3FF;margin-bottom:14px;
@@ -1152,7 +1151,7 @@ html,body{
 .tl-title{font-size:15px;font-weight:600;color:#FFF;margin-bottom:4px}
 .tl-desc{font-size:13px;color:#888;line-height:1.6}
 /* TRANSCRIPT */
-.transcript-section{margin-top:48px}
+.transcript-section{margin-top:32px}
 .transcript-divider{
   display:flex;align-items:center;gap:16px;margin-bottom:28px;
 }
@@ -1176,7 +1175,7 @@ html,body{
 .msg-text{font-size:13px;color:#CCC;line-height:1.7}
 /* FOOTER */
 .doc-footer{
-  margin-top:64px;padding-top:24px;
+  margin-top:40px;padding-top:20px;
   border-top:1px solid rgba(255,255,255,0.1);
   display:flex;align-items:center;justify-content:space-between;
 }
@@ -1239,7 +1238,7 @@ html,body{
   ${nextStepsHTML}
 
   ${this.state.messages.length ? `
-  <div class="transcript-section page-break-before">
+  <div class="transcript-section">
     <div class="transcript-divider">
       <h2>Full Conversation</h2>
       <div class="tline"></div>
