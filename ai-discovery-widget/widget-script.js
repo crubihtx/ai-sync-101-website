@@ -27,6 +27,7 @@ class AIDiscoveryWidget {
             lastUserMessageTime: null,
             idleTimer: null,
             conversationSent: false, // Track if we've sent this conversation to tracker
+            downloadButtonShown: false, // Track if download button has been shown
         };
 
         // DOM Elements
@@ -41,6 +42,7 @@ class AIDiscoveryWidget {
             typingIndicator: document.getElementById('typingIndicator'),
             headerStatus: document.getElementById('headerStatus'),
             notificationBadge: document.getElementById('notificationBadge'),
+            downloadBtn: null, // Injected dynamically when conditions are met
         };
 
         this.init();
@@ -359,6 +361,16 @@ class AIDiscoveryWidget {
             this.state.leadCaptured = true;
             console.log('Lead captured! We have name and email');
         }
+
+        // Show download button when intent is strong and conversation is substantive
+        if (
+            (this.state.leadInfo?.intent === 'interested' || this.state.leadInfo?.intent === 'ready_to_book') &&
+            this.state.messages.length >= 10 &&
+            !this.state.downloadButtonShown
+        ) {
+            this.showDownloadButton();
+            this.state.downloadButtonShown = true;
+        }
     }
 
     hasCompleteLeadInfo() {
@@ -508,6 +520,347 @@ class AIDiscoveryWidget {
                 console.error('Error loading conversation:', error);
             }
         }
+    }
+
+    // ==========================================
+    // PDF DOWNLOAD FEATURE
+    // ==========================================
+
+    loadJsPDF() {
+        return new Promise((resolve) => {
+            if (window.jspdf) { resolve(); return; }
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+            script.onload = () => resolve();
+            document.head.appendChild(script);
+        });
+    }
+
+    showDownloadButton() {
+        const container = document.querySelector('.chat-input-container');
+        if (!container) return;
+
+        const btn = document.createElement('button');
+        btn.id = 'downloadSessionBtn';
+        btn.innerHTML = '&#8595; Download Session Summary';
+        btn.style.cssText = [
+            'width: 100%',
+            'padding: 7px 12px',
+            'background: transparent',
+            'border: 1px solid #00A3FF',
+            'border-radius: 6px',
+            'color: #ffffff',
+            'font-size: 12px',
+            'font-family: Inter, sans-serif',
+            'cursor: pointer',
+            'transition: background 0.2s ease',
+            'margin-bottom: 6px',
+            'letter-spacing: 0.02em',
+        ].join(';');
+
+        btn.addEventListener('mouseenter', () => {
+            btn.style.background = 'rgba(0, 163, 255, 0.1)';
+        });
+        btn.addEventListener('mouseleave', () => {
+            btn.style.background = 'transparent';
+        });
+        btn.addEventListener('click', () => this.generatePDF());
+
+        container.insertBefore(btn, container.firstChild);
+        this.elements.downloadBtn = btn;
+    }
+
+    extractWorkflowFromMessages() {
+        const messages = this.state.messages;
+        // Scan in reverse to find the most recent assistant message containing workflow info
+        for (let i = messages.length - 1; i >= 0; i--) {
+            const msg = messages[i];
+            if (msg.role !== 'assistant') continue;
+            const text = msg.content;
+            if (!text.includes('CURRENT:') && !text.includes('PROPOSED:')) continue;
+
+            let current = null;
+            let proposed = null;
+            let keyChange = null;
+
+            // Extract CURRENT section
+            if (text.includes('CURRENT:')) {
+                const afterCurrent = text.split('CURRENT:')[1];
+                const end = afterCurrent.search(/\n(PROPOSED:|KEY CHANGE:|$)/i);
+                current = (end > -1 ? afterCurrent.substring(0, end) : afterCurrent).trim();
+            }
+
+            // Extract PROPOSED section
+            if (text.includes('PROPOSED:')) {
+                const afterProposed = text.split('PROPOSED:')[1];
+                const end = afterProposed.search(/\n(CURRENT:|KEY CHANGE:|$)/i);
+                proposed = (end > -1 ? afterProposed.substring(0, end) : afterProposed).trim();
+            }
+
+            // Extract KEY CHANGE section
+            const keyChangeMatch = text.match(/KEY CHANGE:\s*([\s\S]*?)(?:\n\n|$)/i);
+            if (keyChangeMatch) {
+                keyChange = keyChangeMatch[1].trim();
+            }
+
+            return { current, proposed, keyChange };
+        }
+        return { current: null, proposed: null, keyChange: null };
+    }
+
+    async generatePDF() {
+        await this.loadJsPDF();
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+        const pageW = 210;
+        const pageH = 297;
+        const margin = 14;
+        const contentW = pageW - margin * 2;
+        const companyName = this.state.leadInfo?.company || this.state.leadInfo?.name || null;
+        const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        const workflow = this.extractWorkflowFromMessages();
+
+        // ---- Helpers ----
+        const hexToRgb = (hex) => {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return [r, g, b];
+        };
+
+        const setFill = (hex) => { const [r, g, b] = hexToRgb(hex); doc.setFillColor(r, g, b); };
+        const setTextColor = (hex) => { const [r, g, b] = hexToRgb(hex); doc.setTextColor(r, g, b); };
+        const setDrawColor = (hex) => { const [r, g, b] = hexToRgb(hex); doc.setDrawColor(r, g, b); };
+
+        // Draw full-page dark background
+        const darkBg = () => {
+            setFill('#0A0A0A');
+            doc.rect(0, 0, pageW, pageH, 'F');
+        };
+
+        // Draw gradient line (blue → pink, approximated as a filled rect with mid-color)
+        const gradientLine = (y) => {
+            // Simulate gradient with three segments
+            const segW = contentW / 3;
+            setFill('#00A3FF');
+            doc.rect(margin, y, segW, 0.5, 'F');
+            setFill('#7B2FFF');
+            doc.rect(margin + segW, y, segW, 0.5, 'F');
+            setFill('#FF1F8F');
+            doc.rect(margin + segW * 2, y, segW, 0.5, 'F');
+        };
+
+        // Header: "AI SYNC 101" left, "Discovery Session Summary" right
+        const drawHeader = () => {
+            // Logo text
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            setTextColor('#FFFFFF');
+            doc.setCharSpace(2);
+            doc.text('AI SYNC 101', margin, 13);
+            doc.setCharSpace(0);
+
+            // Right title with gradient-ish approach: print in blue
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            setTextColor('#00A3FF');
+            doc.text('Discovery Session Summary', pageW - margin, 13, { align: 'right' });
+
+            // Separator line
+            gradientLine(16.5);
+        };
+
+        // Footer
+        const drawFooter = () => {
+            gradientLine(pageH - 14);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            setTextColor('#FFFFFF');
+            doc.text('aisync101.com', pageW / 2, pageH - 9, { align: 'center' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7.5);
+            setTextColor('#AAAAAA');
+            doc.text('We build what you need, not what we sell', pageW / 2, pageH - 5, { align: 'center' });
+        };
+
+        // Wrapped text helper — returns new Y after writing
+        const wrappedText = (text, x, y, maxWidth, lineHeight, color, fontSize, fontStyle) => {
+            doc.setFont('helvetica', fontStyle || 'normal');
+            doc.setFontSize(fontSize || 9);
+            setTextColor(color || '#FFFFFF');
+            const lines = doc.splitTextToSize(text, maxWidth);
+            doc.text(lines, x, y);
+            return y + lines.length * lineHeight;
+        };
+
+        // Card with left accent border
+        const drawCard = (y, height, borderColor) => {
+            setFill('#1A1A1A');
+            doc.rect(margin, y, contentW, height, 'F');
+            setFill(borderColor || '#00A3FF');
+            doc.rect(margin, y, 2.5, height, 'F');
+        };
+
+        // Section label
+        const sectionLabel = (text, y) => {
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            setTextColor('#AAAAAA');
+            doc.setCharSpace(1.5);
+            doc.text(text.toUpperCase(), margin, y);
+            doc.setCharSpace(0);
+            return y + 4;
+        };
+
+        // Numbered list rendering inside a card; returns final Y
+        const numberedList = (rawText, startX, startY, maxWidth, lineH) => {
+            if (!rawText) return startY;
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            let y = startY;
+            let num = 1;
+            for (const line of lines) {
+                // Strip leading numbers/dashes if present
+                const clean = line.replace(/^[\d]+[.)]\s*/, '').replace(/^[-*]\s*/, '');
+                if (!clean) continue;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(8.5);
+                setTextColor('#FFFFFF');
+                const wrapped = doc.splitTextToSize(`${num}. ${clean}`, maxWidth);
+                doc.text(wrapped, startX, y);
+                y += wrapped.length * lineH;
+                num++;
+            }
+            return y;
+        };
+
+        // =============================================
+        // PAGE 1 — SUMMARY
+        // =============================================
+        darkBg();
+        drawHeader();
+
+        let y = 23;
+
+        // Date + Company
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        setTextColor('#AAAAAA');
+        const metaLine = companyName ? `${dateStr}  |  ${companyName}` : dateStr;
+        doc.text(metaLine, margin, y);
+        y += 8;
+
+        // --- PROBLEM DIAGNOSED ---
+        y = sectionLabel('Problem Diagnosed', y);
+        const problemText = this.state.leadInfo?.problem || 'No problem statement captured yet.';
+        const problemLines = doc.splitTextToSize(problemText, contentW - 10);
+        const problemCardH = problemLines.length * 4.5 + 8;
+        drawCard(y, problemCardH, '#00A3FF');
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        setTextColor('#FFFFFF');
+        doc.text(problemLines, margin + 6, y + 5.5);
+        y += problemCardH + 6;
+
+        // --- CURRENT WORKFLOW ---
+        y = sectionLabel('Current Workflow', y);
+        const currentText = workflow.current || 'Workflow details not yet captured in conversation.';
+        const currentLines = currentText.split('\n').map(l => l.trim()).filter(l => l);
+        const currentLineCount = currentLines.reduce((acc, line) => {
+            return acc + doc.splitTextToSize(line, contentW - 12).length;
+        }, 0);
+        const currentCardH = Math.max(currentLineCount * 4.5 + 10, 16);
+        drawCard(y, currentCardH, '#00A3FF');
+        numberedList(currentText, margin + 6, y + 5.5, contentW - 12, 4.5);
+        y += currentCardH + 6;
+
+        // --- PROPOSED WORKFLOW ---
+        y = sectionLabel('Proposed Workflow', y);
+        const proposedText = workflow.proposed || 'Proposed solution not yet defined.';
+        const proposedLines = proposedText.split('\n').map(l => l.trim()).filter(l => l);
+        const proposedLineCount = proposedLines.reduce((acc, line) => {
+            return acc + doc.splitTextToSize(line, contentW - 12).length;
+        }, 0);
+        const proposedCardH = Math.max(proposedLineCount * 4.5 + 10, 16);
+        drawCard(y, proposedCardH, '#FF1F8F');
+        numberedList(proposedText, margin + 6, y + 5.5, contentW - 12, 4.5);
+        y += proposedCardH + 6;
+
+        // --- KEY CHANGE ---
+        if (workflow.keyChange) {
+            y = sectionLabel('Key Change', y);
+            const kcLines = doc.splitTextToSize(workflow.keyChange, contentW - 10);
+            const kcCardH = kcLines.length * 4.5 + 8;
+            setFill('#1A1A1A');
+            doc.rect(margin, y, contentW, kcCardH, 'F');
+            // Gradient approximation: blue text
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9.5);
+            setTextColor('#00A3FF');
+            doc.text(kcLines, margin + 5, y + 5.5);
+            y += kcCardH + 6;
+        }
+
+        drawFooter();
+
+        // =============================================
+        // PAGE 2 — FULL CONVERSATION
+        // =============================================
+        doc.addPage();
+        darkBg();
+        drawHeader();
+
+        y = 23;
+        const lineH = 4.5;
+        const cardPadX = 5;
+        const cardPadY = 4;
+
+        for (const msg of this.state.messages) {
+            const isUser = msg.role === 'user';
+            const labelText = isUser ? 'YOU' : 'AI SYNC 101';
+            const bgColor = isUser ? '#1A1A1A' : '#222222';
+            const labelColor = isUser ? '#00A3FF' : '#FF1F8F';
+
+            // Measure text height
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            const textLines = doc.splitTextToSize(msg.content, contentW - cardPadX * 2 - 2);
+            const cardH = textLines.length * lineH + cardPadY * 2 + 5; // +5 for label row
+
+            // Page overflow check
+            if (y + cardH > pageH - 18) {
+                doc.addPage();
+                darkBg();
+                drawHeader();
+                y = 23;
+            }
+
+            // Card background
+            setFill(bgColor);
+            doc.rect(margin, y, contentW, cardH, 'F');
+
+            // Label
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            setTextColor(labelColor);
+            doc.setCharSpace(1);
+            doc.text(labelText, margin + cardPadX, y + cardPadY + 2);
+            doc.setCharSpace(0);
+
+            // Message text
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            setTextColor('#FFFFFF');
+            doc.text(textLines, margin + cardPadX, y + cardPadY + 7);
+
+            y += cardH + 3;
+        }
+
+        drawFooter();
+
+        // Save
+        const safeName = (companyName || 'Session').replace(/[^a-zA-Z0-9]/g, '-');
+        doc.save(`AISSync101-Discovery-${safeName}.pdf`);
     }
 
     // ==========================================
