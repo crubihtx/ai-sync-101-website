@@ -1,11 +1,14 @@
 /**
- * CONVERSATION TRACKER - VERCEL EDGE FUNCTION
+ * CONVERSATION TRACKER - VERCEL SERVERLESS FUNCTION
  * Receives completed conversations and sends summary emails via Resend
- * Using Edge Runtime with Web API pattern (matches working chat.js)
+ * Using Node.js runtime for reliable environment variable access
+ *
+ * CRITICAL: Edge Runtime does NOT pass environment variables reliably
+ * Switched to Node.js runtime to fix environment variable access
  */
 
 export const config = {
-  runtime: 'edge',
+  runtime: 'nodejs20.x',
 };
 
 // ==========================================
