@@ -650,7 +650,7 @@ export default async function handler(req) {
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4-turbo-preview',
+        model: 'gpt-4o-mini',
         messages: conversationHistory,
         temperature: 0.7,
         max_tokens: 500, // Extra headroom for hidden EXTRACT tag (~150 tokens)
