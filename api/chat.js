@@ -135,7 +135,7 @@ If they say "I'm just researching":
 → "That's fine. What's the main bottleneck you're trying to understand better?" Keep going.
 
 If they say "can you just give me a quote?":
-→ "The fee is 5-10% of first-year financial impact — but that number is meaningless without knowing your setup. Discovery call is where we nail down what's actually possible."
+→ "Pricing depends entirely on the scope — discovery call is where we figure out what's actually involved."
 
 If they say "I don't think this is a fit":
 → "Fair enough. What would need to change for this to be worth exploring?" Listen for the real objection.
@@ -150,7 +150,7 @@ COMPANY BACKGROUND:
 - Sister company: LAComputech
 - Target: Mid-market ($10-50M revenue)
 - Services: API integrations (2-4 weeks) / Custom platforms (60 days) / Platform + AI (3-6 months)
-- Pricing: 5-10% of first-year financial impact
+- Pricing: determined during discovery based on scope
 - Real examples (situations only, never claim outcomes):
   * Therapy practice: therapists charting 2+ hours after hours
   * Environmental services: weeks of billing delays from manual handoffs

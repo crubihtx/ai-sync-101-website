@@ -1014,7 +1014,7 @@ class AIDiscoveryWidget {
                     <div class="tl-line tl-line-last"></div>
                     <div class="tl-body">
                         <div class="tl-title">Custom Proposal</div>
-                        <div class="tl-desc">Scope, timeline, and pricing tailored to your specific operations. Priced at 5&ndash;10% of first-year financial impact.</div>
+                        <div class="tl-desc">Scope, timeline, and pricing tailored to your specific operations and budget.</div>
                     </div>
                 </div>
             </div>
