@@ -41,7 +41,7 @@ class AIDiscoveryWidget {
             typingIndicator: document.getElementById('typingIndicator'),
             headerStatus: document.getElementById('headerStatus'),
             notificationBadge: document.getElementById('notificationBadge'),
-            downloadBtn: null, // Injected dynamically when conditions are met
+            downloadBtn: document.getElementById('downloadSessionBtn'),
         };
 
         this.init();
@@ -54,7 +54,6 @@ class AIDiscoveryWidget {
     init() {
         this.loadConversationFromStorage();
         this.attachEventListeners();
-        this.showDownloadButton(); // Always visible — persistent
         this.autoOpenWidget();
 
         // Send initial greeting if no messages
@@ -84,6 +83,11 @@ class AIDiscoveryWidget {
 
         // Auto-resize textarea
         this.elements.chatInput.addEventListener('input', () => this.autoResizeTextarea());
+
+        // Download button
+        if (this.elements.downloadBtn) {
+            this.elements.downloadBtn.addEventListener('click', () => this.generatePDF());
+        }
     }
 
     autoOpenWidget() {

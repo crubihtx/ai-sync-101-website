@@ -546,6 +546,26 @@
     text-align: center;
 }
 
+.download-session-btn {
+    display: block;
+    width: 100%;
+    padding: 7px 12px;
+    margin-bottom: 8px;
+    background: transparent;
+    border: 1px solid #00A3FF;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 12px;
+    font-family: Inter, sans-serif;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.download-session-btn:hover {
+    background: rgba(0, 163, 255, 0.1);
+}
+
 /* ==========================================
    LEAD CAPTURE FORM
    ========================================== */

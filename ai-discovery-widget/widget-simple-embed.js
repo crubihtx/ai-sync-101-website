@@ -78,6 +78,7 @@
 
                 <!-- Chat Input -->
                 <div class="chat-input-container">
+                    <button id="downloadSessionBtn" class="download-session-btn">&#8595; Download Session Summary</button>
                     <div class="chat-input-wrapper">
                         <textarea
                             id="chatInput"
