@@ -1185,6 +1185,17 @@ html,body{
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
 .footer-note{font-size:11px;color:#444}
+/* MOBILE */
+@media screen and (max-width:680px){
+  .page{padding:24px 20px 40px}
+  .doc-header{flex-wrap:wrap;gap:12px}
+  .doc-meta{text-align:left}
+  .wf-grid{flex-direction:column}
+  .hero h1{font-size:22px}
+  .contact-table td{padding:9px 14px}
+  .tl-item{padding:16px 16px 16px 58px}
+  .msg{padding:12px 14px}
+}
 /* PRINT BAR */
 .print-bar{
   position:fixed;bottom:0;left:0;right:0;
@@ -1253,26 +1264,81 @@ html,body{
 
 </div>
 
-<div class="print-bar no-print">
-  <p>To save as PDF &rarr; click the button and choose &ldquo;Save as PDF&rdquo; in the dialog</p>
-  <button class="btn-print" onclick="window.print()">&#8595;&nbsp; Save as PDF</button>
-</div>
-
 <script>
-window.addEventListener('load', function() {
-  setTimeout(function() { window.print(); }, 900);
-});
+var isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+if (!isMobile) {
+  // Desktop: show print bar and auto-trigger print dialog
+  document.write('<div class="print-bar no-print"><p>To save as PDF &rarr; click the button and choose &ldquo;Save as PDF&rdquo; in the dialog<\/p><button class="btn-print" onclick="window.print()">&#8595;&nbsp; Save as PDF<\/button><\/div>');
+  window.addEventListener('load', function() {
+    setTimeout(function() { window.print(); }, 900);
+  });
+}
 <\/script>
 </body>
 </html>`;
 
-        const win = window.open('', '_blank', 'width=860,height=700');
-        if (!win) {
-            alert('Please allow pop-ups for this site to generate your PDF.');
-            return;
+        const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        if (isMobile) {
+            // Mobile: inject into a fullscreen overlay on the current page
+            // (window.open / window.print are unreliable on iOS Safari)
+            const overlay = document.createElement('div');
+            overlay.id = 'pdf-overlay';
+            overlay.style.cssText = [
+                'position:fixed','top:0','left:0','right:0','bottom:0',
+                'z-index:999999','background:#0A0A0A','overflow-y:auto',
+                '-webkit-overflow-scrolling:touch'
+            ].join(';');
+
+            // Close button (always visible at top)
+            const closeBar = document.createElement('div');
+            closeBar.style.cssText = [
+                'position:sticky','top:0','z-index:10',
+                'background:rgba(10,10,10,0.95)',
+                'backdrop-filter:blur(10px)',
+                '-webkit-backdrop-filter:blur(10px)',
+                'border-bottom:1px solid rgba(255,255,255,0.1)',
+                'padding:12px 16px',
+                'display:flex','align-items:center','justify-content:space-between',
+                'gap:12px'
+            ].join(';');
+            closeBar.innerHTML = \`
+                <span style="font-family:Inter,sans-serif;font-size:13px;color:#888">
+                    Use your browser's share menu to save as PDF
+                </span>
+                <button onclick="document.getElementById('pdf-overlay').remove()" style="
+                    padding:8px 16px;border:1px solid rgba(255,255,255,0.2);
+                    border-radius:8px;background:transparent;color:#fff;
+                    font-family:Inter,sans-serif;font-size:13px;cursor:pointer;
+                    white-space:nowrap;
+                ">× Close</button>
+            \`;
+
+            // iframe to render the HTML safely
+            const iframe = document.createElement('iframe');
+            iframe.style.cssText = 'width:100%;height:calc(100vh - 57px);border:none;display:block';
+            iframe.setAttribute('sandbox', 'allow-same-origin allow-scripts');
+
+            overlay.appendChild(closeBar);
+            overlay.appendChild(iframe);
+            document.body.appendChild(overlay);
+
+            // Write HTML into iframe after appending
+            const idoc = iframe.contentDocument || iframe.contentWindow.document;
+            idoc.open();
+            idoc.write(html);
+            idoc.close();
+
+        } else {
+            // Desktop: open new window and auto-print
+            const win = window.open('', '_blank', 'width=900,height=800');
+            if (!win) {
+                alert('Please allow pop-ups for this site to generate your PDF.');
+                return;
+            }
+            win.document.write(html);
+            win.document.close();
         }
-        win.document.write(html);
-        win.document.close();
     }
 
     generateConversationId() {
