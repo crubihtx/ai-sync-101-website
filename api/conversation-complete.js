@@ -1,10 +1,12 @@
 /**
- * CONVERSATION TRACKER - VERCEL SERVERLESS FUNCTION
+ * CONVERSATION TRACKER - VERCEL EDGE FUNCTION
  * Receives completed conversations and sends summary emails via Resend
- * Using Node.js runtime for proper environment variable support
+ * Using Edge Runtime with Web API pattern (matches working chat.js)
  */
 
-// Removed edge config - using default Node.js runtime for env var access
+export const config = {
+  runtime: 'edge',
+};
 
 // ==========================================
 // CONVERSATION ANALYZER
@@ -339,35 +341,40 @@ ${formatTranscript(messages)}
 // MAIN HANDLER
 // ==========================================
 
-export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export default async function handler(req) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
 
   if (req.method === 'OPTIONS') {
-    return res.status(204).end();
+    return new Response(null, { status: 204, headers });
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers,
+    });
   }
 
   try {
-    // Try multiple environment variable names (Vercel sometimes has issues with certain names)
-    const RESEND_API_KEY = process.env.RESEND_KEY || process.env.RESEND_API_KEY;
+    // Access environment variables in Edge Runtime
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
     const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
 
-    const { messages, metadata } = req.body;
+    const { messages, metadata } = await req.json();
 
     if (!messages || !Array.isArray(messages) || messages.length < 10) {
-      return res.status(400).json({ error: 'Minimum 10 messages required' });
+      return new Response(JSON.stringify({ error: 'Minimum 10 messages required' }), {
+        status: 400,
+        headers,
+      });
     }
 
     console.log(`Processing conversation with ${messages.length} messages`);
-    console.log('DEBUG - All env vars:', Object.keys(process.env));
-    console.log('DEBUG - RESEND_API_KEY exists?', !!RESEND_API_KEY);
-    console.log('DEBUG - TEAM_EMAIL:', TEAM_EMAIL);
 
     // Analyze conversation
     const analysis = analyzeConversation(messages);
@@ -384,7 +391,7 @@ export default async function handler(req, res) {
     // Generate email HTML
     const htmlContent = generateEmailHTML(analysis, messages, metadata);
 
-    // Send email via Resend API (using fetch for Edge Runtime compatibility)
+    // Send email via Resend API
     const emailResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -403,37 +410,39 @@ export default async function handler(req, res) {
       const error = await emailResponse.text();
       console.error('Resend API error - Status:', emailResponse.status);
       console.error('Resend API error - Response:', error);
-      console.error('API Key being used:', RESEND_API_KEY ? `${RESEND_API_KEY.substring(0, 8)}...` : 'MISSING');
-      console.error('Request body:', JSON.stringify({
-        from: 'AI Discovery Widget <widget@aisync101.com>',
-        to: [TEAM_EMAIL],
-        subject: subject,
-      }));
 
-      // Return detailed error to user
-      return res.status(500).json({
+      return new Response(JSON.stringify({
         error: 'Failed to send email',
         status: emailResponse.status,
         details: error,
         apiKeyPresent: !!RESEND_API_KEY,
         teamEmail: TEAM_EMAIL
+      }), {
+        status: 500,
+        headers,
       });
     }
 
     const result = await emailResponse.json();
     console.log('Email sent successfully:', result);
 
-    return res.status(200).json({
+    return new Response(JSON.stringify({
       success: true,
       message: 'Conversation processed and email sent',
       emailId: result.id
+    }), {
+      status: 200,
+      headers,
     });
 
   } catch (error) {
     console.error('Error processing conversation:', error);
-    return res.status(500).json({
+    return new Response(JSON.stringify({
       error: 'Failed to process conversation',
       message: error.message
+    }), {
+      status: 500,
+      headers,
     });
   }
 }
