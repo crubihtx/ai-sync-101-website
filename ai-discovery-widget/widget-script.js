@@ -1039,12 +1039,12 @@ html,body{
 }
 @media print{
   html,body{background:#0A0A0A!important}
-  @page{margin:16mm 14mm;size:A4}
+  @page{margin:1in;size:letter}
   .no-print{display:none!important}
   .avoid-break{page-break-inside:avoid}
 }
 /* PAGE */
-.page{width:100%;max-width:794px;margin:0 auto;padding:48px 48px 48px;box-sizing:border-box}
+.page{width:100%;max-width:624px;margin:0 auto;padding:40px 0 48px;box-sizing:border-box}
 /* GRADIENT BAR */
 .gradient-bar{
   height:4px;
