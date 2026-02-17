@@ -344,28 +344,21 @@ ${formatTranscript(messages)}
 // MAIN HANDLER
 // ==========================================
 
-export default async function handler(req) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
-  };
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers });
+    return res.status(204).end();
   }
 
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers,
-    });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    // Access environment variables in Edge Runtime
-    // Debug: Check all possible variable names
+    // Node.js runtime - reliable process.env access
     const RESEND_API_KEY = process.env.RESEND_KEY || process.env.RESEND_API_KEY;
     const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
 
@@ -378,13 +371,10 @@ export default async function handler(req) {
       teamEmail: TEAM_EMAIL
     });
 
-    const { messages, metadata } = await req.json();
+    const { messages, metadata } = req.body;
 
     if (!messages || !Array.isArray(messages) || messages.length < 10) {
-      return new Response(JSON.stringify({ error: 'Minimum 10 messages required' }), {
-        status: 400,
-        headers,
-      });
+      return res.status(400).json({ error: 'Minimum 10 messages required' });
     }
 
     console.log(`Processing conversation with ${messages.length} messages`);
@@ -424,38 +414,29 @@ export default async function handler(req) {
       console.error('Resend API error - Status:', emailResponse.status);
       console.error('Resend API error - Response:', error);
 
-      return new Response(JSON.stringify({
+      return res.status(500).json({
         error: 'Failed to send email',
         status: emailResponse.status,
         details: error,
         apiKeyPresent: !!RESEND_API_KEY,
         teamEmail: TEAM_EMAIL
-      }), {
-        status: 500,
-        headers,
       });
     }
 
     const result = await emailResponse.json();
     console.log('Email sent successfully:', result);
 
-    return new Response(JSON.stringify({
+    return res.status(200).json({
       success: true,
       message: 'Conversation processed and email sent',
       emailId: result.id
-    }), {
-      status: 200,
-      headers,
     });
 
   } catch (error) {
     console.error('Error processing conversation:', error);
-    return new Response(JSON.stringify({
+    return res.status(500).json({
       error: 'Failed to process conversation',
       message: error.message
-    }), {
-      status: 500,
-      headers,
     });
   }
 }
