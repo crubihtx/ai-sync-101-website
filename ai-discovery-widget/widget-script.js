@@ -27,7 +27,6 @@ class AIDiscoveryWidget {
             lastUserMessageTime: null,
             idleTimer: null,
             conversationSent: false, // Track if we've sent this conversation to tracker
-            downloadButtonShown: false, // Track if download button has been shown
         };
 
         // DOM Elements
@@ -55,6 +54,7 @@ class AIDiscoveryWidget {
     init() {
         this.loadConversationFromStorage();
         this.attachEventListeners();
+        this.showDownloadButton(); // Always visible — persistent
         this.autoOpenWidget();
 
         // Send initial greeting if no messages
@@ -362,15 +362,6 @@ class AIDiscoveryWidget {
             console.log('Lead captured! We have name and email');
         }
 
-        // Show download button when intent is strong and conversation is substantive
-        if (
-            (this.state.leadInfo?.intent === 'interested' || this.state.leadInfo?.intent === 'ready_to_book') &&
-            this.state.messages.length >= 10 &&
-            !this.state.downloadButtonShown
-        ) {
-            this.showDownloadButton();
-            this.state.downloadButtonShown = true;
-        }
     }
 
     hasCompleteLeadInfo() {
