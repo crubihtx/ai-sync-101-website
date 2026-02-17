@@ -613,8 +613,19 @@ class AIDiscoveryWidget {
         const margin = 14;
         const contentW = pageW - margin * 2;
         const companyName = this.state.leadInfo?.company || this.state.leadInfo?.name || null;
+        const visitorName = this.state.leadInfo?.name || null;
+        const visitorEmail = this.state.leadInfo?.email || null;
+        const visitorPhone = this.state.leadInfo?.phone || null;
+        const visitorWebsite = this.state.leadInfo?.website || null;
         const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
         const workflow = this.extractWorkflowFromMessages();
+
+        // --- Derive problem text: prefer leadInfo.problem, fall back to first substantive user message ---
+        let problemText = this.state.leadInfo?.problem || null;
+        if (!problemText) {
+            const firstUserMsg = this.state.messages.find(m => m.role === 'user' && m.content.length > 10);
+            problemText = firstUserMsg ? firstUserMsg.content : 'No problem statement captured yet.';
+        }
 
         // ---- Helpers ----
         const hexToRgb = (hex) => {
@@ -626,7 +637,6 @@ class AIDiscoveryWidget {
 
         const setFill = (hex) => { const [r, g, b] = hexToRgb(hex); doc.setFillColor(r, g, b); };
         const setTextColor = (hex) => { const [r, g, b] = hexToRgb(hex); doc.setTextColor(r, g, b); };
-        const setDrawColor = (hex) => { const [r, g, b] = hexToRgb(hex); doc.setDrawColor(r, g, b); };
 
         // Draw full-page dark background
         const darkBg = () => {
@@ -634,9 +644,8 @@ class AIDiscoveryWidget {
             doc.rect(0, 0, pageW, pageH, 'F');
         };
 
-        // Draw gradient line (blue → pink, approximated as a filled rect with mid-color)
+        // Gradient separator line
         const gradientLine = (y) => {
-            // Simulate gradient with three segments
             const segW = contentW / 3;
             setFill('#00A3FF');
             doc.rect(margin, y, segW, 0.5, 'F');
@@ -646,27 +655,20 @@ class AIDiscoveryWidget {
             doc.rect(margin + segW * 2, y, segW, 0.5, 'F');
         };
 
-        // Header: "AI SYNC 101" left, "Discovery Session Summary" right
         const drawHeader = () => {
-            // Logo text
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(11);
             setTextColor('#FFFFFF');
             doc.setCharSpace(2);
             doc.text('AI SYNC 101', margin, 13);
             doc.setCharSpace(0);
-
-            // Right title with gradient-ish approach: print in blue
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(9);
             setTextColor('#00A3FF');
             doc.text('Discovery Session Summary', pageW - margin, 13, { align: 'right' });
-
-            // Separator line
             gradientLine(16.5);
         };
 
-        // Footer
         const drawFooter = () => {
             gradientLine(pageH - 14);
             doc.setFont('helvetica', 'bold');
@@ -679,48 +681,54 @@ class AIDiscoveryWidget {
             doc.text('We build what you need, not what we sell', pageW / 2, pageH - 5, { align: 'center' });
         };
 
-        // Wrapped text helper — returns new Y after writing
-        const wrappedText = (text, x, y, maxWidth, lineHeight, color, fontSize, fontStyle) => {
-            doc.setFont('helvetica', fontStyle || 'normal');
-            doc.setFontSize(fontSize || 9);
-            setTextColor(color || '#FFFFFF');
-            const lines = doc.splitTextToSize(text, maxWidth);
-            doc.text(lines, x, y);
-            return y + lines.length * lineHeight;
-        };
-
         // Card with left accent border
         const drawCard = (y, height, borderColor) => {
-            setFill('#1A1A1A');
+            setFill('#161616');
             doc.rect(margin, y, contentW, height, 'F');
             setFill(borderColor || '#00A3FF');
             doc.rect(margin, y, 2.5, height, 'F');
         };
 
-        // Section label
+        // Section label — returns y after label
         const sectionLabel = (text, y) => {
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(7);
-            setTextColor('#AAAAAA');
+            setTextColor('#666666');
             doc.setCharSpace(1.5);
             doc.text(text.toUpperCase(), margin, y);
             doc.setCharSpace(0);
-            return y + 4;
+            return y + 3.5;
         };
 
-        // Numbered list rendering inside a card; returns final Y
+        // Measure card height for given text at fontSize 8.5, maxWidth, lineH
+        const measureCardH = (text, maxWidth, lineH, padY) => {
+            doc.setFontSize(8.5);
+            const lines = doc.splitTextToSize(text, maxWidth);
+            return lines.length * lineH + padY * 2 + 5;
+        };
+
+        // Render plain wrapped text inside a card
+        const cardText = (text, x, y, maxWidth, lineH) => {
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8.5);
+            setTextColor('#DDDDDD');
+            const lines = doc.splitTextToSize(text, maxWidth);
+            doc.text(lines, x, y);
+            return y + lines.length * lineH;
+        };
+
+        // Numbered list inside card
         const numberedList = (rawText, startX, startY, maxWidth, lineH) => {
             if (!rawText) return startY;
             const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
             let y = startY;
             let num = 1;
             for (const line of lines) {
-                // Strip leading numbers/dashes if present
                 const clean = line.replace(/^[\d]+[.)]\s*/, '').replace(/^[-*]\s*/, '');
                 if (!clean) continue;
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(8.5);
-                setTextColor('#FFFFFF');
+                setTextColor('#DDDDDD');
                 const wrapped = doc.splitTextToSize(`${num}. ${clean}`, maxWidth);
                 doc.text(wrapped, startX, y);
                 y += wrapped.length * lineH;
@@ -729,126 +737,178 @@ class AIDiscoveryWidget {
             return y;
         };
 
+        const LH = 4.2;   // line height for body text
+        const PAD = 4;     // card vertical padding (top + bottom)
+        const GAP = 5;     // gap between sections
+        const INNER = contentW - 9; // text width inside card
+
         // =============================================
         // PAGE 1 — SUMMARY
         // =============================================
         darkBg();
         drawHeader();
 
-        let y = 23;
+        let y = 22;
 
-        // Date + Company
+        // Meta line: date | company
         doc.setFont('helvetica', 'normal');
         doc.setFontSize(8);
-        setTextColor('#AAAAAA');
-        const metaLine = companyName ? `${dateStr}  |  ${companyName}` : dateStr;
+        setTextColor('#555555');
+        const metaLine = companyName ? `${dateStr}  ·  ${companyName}` : dateStr;
         doc.text(metaLine, margin, y);
-        y += 8;
+        y += 7;
 
         // --- PROBLEM DIAGNOSED ---
         y = sectionLabel('Problem Diagnosed', y);
-        const problemText = this.state.leadInfo?.problem || 'No problem statement captured yet.';
-        const problemLines = doc.splitTextToSize(problemText, contentW - 10);
-        const problemCardH = problemLines.length * 4.5 + 8;
-        drawCard(y, problemCardH, '#00A3FF');
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(9);
-        setTextColor('#FFFFFF');
-        doc.text(problemLines, margin + 6, y + 5.5);
-        y += problemCardH + 6;
+        {
+            doc.setFontSize(8.5);
+            const pLines = doc.splitTextToSize(problemText, INNER);
+            const cardH = pLines.length * LH + PAD * 2 + 5;
+            drawCard(y, cardH, '#00A3FF');
+            doc.setFont('helvetica', 'normal');
+            setTextColor('#DDDDDD');
+            doc.text(pLines, margin + 6, y + PAD + 3.5);
+            y += cardH + GAP;
+        }
 
         // --- CURRENT WORKFLOW ---
         y = sectionLabel('Current Workflow', y);
-        const currentText = workflow.current || 'Workflow details not yet captured in conversation.';
-        const currentLines = currentText.split('\n').map(l => l.trim()).filter(l => l);
-        const currentLineCount = currentLines.reduce((acc, line) => {
-            return acc + doc.splitTextToSize(line, contentW - 12).length;
-        }, 0);
-        const currentCardH = Math.max(currentLineCount * 4.5 + 10, 16);
-        drawCard(y, currentCardH, '#00A3FF');
-        numberedList(currentText, margin + 6, y + 5.5, contentW - 12, 4.5);
-        y += currentCardH + 6;
+        {
+            const currentText = workflow.current || 'Workflow not yet mapped in conversation.';
+            doc.setFontSize(8.5);
+            // Measure all lines
+            let totalLines = 0;
+            const cleanLines = currentText.split('\n').map(l => l.trim()).filter(l => l);
+            cleanLines.forEach(l => {
+                const clean = l.replace(/^[\d]+[.)]\s*/, '').replace(/^[-*]\s*/, '');
+                totalLines += doc.splitTextToSize(clean ? `1. ${clean}` : l, INNER).length;
+            });
+            const cardH = Math.max(totalLines * LH + PAD * 2 + 5, 14);
+            drawCard(y, cardH, '#00A3FF');
+            numberedList(currentText, margin + 6, y + PAD + 3.5, INNER, LH);
+            y += cardH + GAP;
+        }
 
         // --- PROPOSED WORKFLOW ---
         y = sectionLabel('Proposed Workflow', y);
-        const proposedText = workflow.proposed || 'Proposed solution not yet defined.';
-        const proposedLines = proposedText.split('\n').map(l => l.trim()).filter(l => l);
-        const proposedLineCount = proposedLines.reduce((acc, line) => {
-            return acc + doc.splitTextToSize(line, contentW - 12).length;
-        }, 0);
-        const proposedCardH = Math.max(proposedLineCount * 4.5 + 10, 16);
-        drawCard(y, proposedCardH, '#FF1F8F');
-        numberedList(proposedText, margin + 6, y + 5.5, contentW - 12, 4.5);
-        y += proposedCardH + 6;
+        {
+            const proposedText = workflow.proposed || 'Proposed solution not yet defined.';
+            doc.setFontSize(8.5);
+            let totalLines = 0;
+            const cleanLines = proposedText.split('\n').map(l => l.trim()).filter(l => l);
+            cleanLines.forEach(l => {
+                const clean = l.replace(/^[\d]+[.)]\s*/, '').replace(/^[-*]\s*/, '');
+                totalLines += doc.splitTextToSize(clean ? `1. ${clean}` : l, INNER).length;
+            });
+            const cardH = Math.max(totalLines * LH + PAD * 2 + 5, 14);
+            drawCard(y, cardH, '#FF1F8F');
+            numberedList(proposedText, margin + 6, y + PAD + 3.5, INNER, LH);
+            y += cardH + GAP;
+        }
 
         // --- KEY CHANGE ---
         if (workflow.keyChange) {
             y = sectionLabel('Key Change', y);
-            const kcLines = doc.splitTextToSize(workflow.keyChange, contentW - 10);
-            const kcCardH = kcLines.length * 4.5 + 8;
-            setFill('#1A1A1A');
-            doc.rect(margin, y, contentW, kcCardH, 'F');
-            // Gradient approximation: blue text
+            doc.setFontSize(8.5);
+            const kcLines = doc.splitTextToSize(workflow.keyChange, INNER);
+            const cardH = kcLines.length * LH + PAD * 2 + 5;
+            drawCard(y, cardH, '#7B2FFF');
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(9.5);
+            doc.setFontSize(8.5);
+            setTextColor('#FFFFFF');
+            doc.text(kcLines, margin + 6, y + PAD + 3.5);
+            y += cardH + GAP;
+        }
+
+        // --- NEXT STEPS (contact info + CTA) ---
+        if (visitorName || visitorEmail || visitorPhone) {
+            y = sectionLabel('Next Steps', y);
+            // Two-column row: contact info left, CTA right
+            const rowH = 18;
+            setFill('#161616');
+            doc.rect(margin, y, contentW, rowH, 'F');
+            // Left accent
+            setFill('#00A3FF');
+            doc.rect(margin, y, 2.5, rowH, 'F');
+
+            // Contact info lines
+            let contactY = y + 5;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(7);
+            setTextColor('#AAAAAA');
+            doc.setCharSpace(0.5);
+            doc.text('CONTACT', margin + 6, contactY);
+            doc.setCharSpace(0);
+            contactY += 3.5;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(8);
+            setTextColor('#FFFFFF');
+            const contactParts = [visitorName, visitorEmail, visitorPhone, visitorWebsite].filter(Boolean);
+            doc.text(contactParts.join('  ·  '), margin + 6, contactY);
+
+            // Right side CTA
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(8);
             setTextColor('#00A3FF');
-            doc.text(kcLines, margin + 5, y + 5.5);
-            y += kcCardH + 6;
+            doc.text('Discovery call within 24 hours', pageW - margin, y + 8, { align: 'right' });
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(7.5);
+            setTextColor('#555555');
+            doc.text('info@aisync101.com', pageW - margin, y + 13, { align: 'right' });
+
+            y += rowH + GAP;
         }
 
         drawFooter();
 
         // =============================================
-        // PAGE 2 — FULL CONVERSATION
+        // PAGE 2+ — FULL CONVERSATION
         // =============================================
         doc.addPage();
         darkBg();
         drawHeader();
 
-        y = 23;
-        const lineH = 4.5;
+        y = 22;
         const cardPadX = 5;
-        const cardPadY = 4;
+        const cardPadY = 3.5;
 
         for (const msg of this.state.messages) {
             const isUser = msg.role === 'user';
             const labelText = isUser ? 'YOU' : 'AI SYNC 101';
-            const bgColor = isUser ? '#1A1A1A' : '#222222';
+            const bgColor = isUser ? '#161616' : '#1E1E1E';
             const labelColor = isUser ? '#00A3FF' : '#FF1F8F';
 
-            // Measure text height
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8.5);
             const textLines = doc.splitTextToSize(msg.content, contentW - cardPadX * 2 - 2);
-            const cardH = textLines.length * lineH + cardPadY * 2 + 5; // +5 for label row
+            const cardH = textLines.length * LH + cardPadY * 2 + 5;
 
-            // Page overflow check
+            // Only add new page if this card genuinely doesn't fit
             if (y + cardH > pageH - 18) {
+                drawFooter();
                 doc.addPage();
                 darkBg();
                 drawHeader();
-                y = 23;
+                y = 22;
             }
 
-            // Card background
             setFill(bgColor);
             doc.rect(margin, y, contentW, cardH, 'F');
 
-            // Label
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(7);
+            doc.setFontSize(6.5);
             setTextColor(labelColor);
             doc.setCharSpace(1);
             doc.text(labelText, margin + cardPadX, y + cardPadY + 2);
             doc.setCharSpace(0);
 
-            // Message text
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8.5);
-            setTextColor('#FFFFFF');
-            doc.text(textLines, margin + cardPadX, y + cardPadY + 7);
+            setTextColor('#CCCCCC');
+            doc.text(textLines, margin + cardPadX, y + cardPadY + 6.5);
 
-            y += cardH + 3;
+            y += cardH + 2;
         }
 
         drawFooter();
