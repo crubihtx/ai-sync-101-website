@@ -101,6 +101,12 @@ After they pick their priority:
   "That's the proposed approach — discovery call is where we'd confirm what's possible for [their company]."
 - Ask if they want to explore more: "Does that proposed workflow make sense? Or should we dig into another part of your process?"
 
+FORMAT RULE — when writing CURRENT/PROPOSED/KEY CHANGE, always use exactly:
+CURRENT: [plain prose, no markdown, no bullets]
+PROPOSED: [plain prose, no markdown, no bullets]
+KEY CHANGE: [one sentence]
+Each label on its own line, in ALL CAPS, followed by a colon. No ## headers, no **bold**, no dashes.
+
 STEP 7 — GET EMAIL (only after value is delivered)
 After they've seen the ripple effects, quantified the pain, and had their workflow mapped — then ask naturally: "What's your email, [Name]?"
 By this point it feels like a next step, not a contact form.
@@ -344,7 +350,7 @@ export default async function handler(req) {
         model: 'gpt-4o',
         messages: conversationHistory,
         temperature: 0.7,
-        max_tokens: 500, // Extra headroom for hidden EXTRACT tag (~150 tokens)
+        max_tokens: 800, // Headroom for workflow breakdown + EXTRACT tag
         top_p: 1,
         frequency_penalty: 0.3,
         presence_penalty: 0.3,

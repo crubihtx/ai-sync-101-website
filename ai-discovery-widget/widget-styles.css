@@ -782,3 +782,106 @@
     white-space: nowrap;
     border-width: 0;
 }
+
+/* ==========================================
+   WORKFLOW DIAGRAM CARD (in-chat)
+   ========================================== */
+
+.chat-widget .message-workflow-wide {
+    max-width: 100% !important;
+    width: 100%;
+}
+
+.chat-widget .workflow-diagram {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 6px;
+    animation: messageSlideIn 0.3s ease-out;
+}
+
+.chat-widget .wf-gradient-bar {
+    height: 3px;
+    background: linear-gradient(135deg, #00A3FF 0%, #7B2FFF 50%, #FF1F8F 100%);
+    width: 100%;
+}
+
+.chat-widget .wf-columns {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+}
+
+.chat-widget .wf-col {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.chat-widget .wf-col-current {
+    border-left: 3px solid #FF1F8F;
+}
+
+.chat-widget .wf-col-proposed {
+    border-left: 3px solid #00A3FF;
+}
+
+.chat-widget .wf-tag {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    margin-bottom: 7px;
+    display: block;
+}
+
+.chat-widget .wf-tag-current { color: #FF1F8F; }
+.chat-widget .wf-tag-proposed { color: #00A3FF; }
+
+.chat-widget .wf-text {
+    color: #AAAAAA;
+    font-size: 11.5px;
+    line-height: 1.65;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+.chat-widget .wf-key-change {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: rgba(123, 47, 255, 0.1);
+    border-top: 1px solid rgba(123, 47, 255, 0.2);
+    padding: 10px 14px;
+    box-sizing: border-box;
+}
+
+.chat-widget .wf-key-change-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: #7B2FFF;
+    white-space: nowrap;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.chat-widget .wf-key-change-text {
+    font-size: 11.5px;
+    color: #CCCCCC;
+    line-height: 1.6;
+}
+
+@media (max-width: 480px) {
+    .chat-widget .wf-columns {
+        flex-direction: column;
+    }
+}

@@ -261,15 +261,68 @@ class AIDiscoveryWidget {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${message.role}`;
 
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.className = 'message-bubble';
-        bubbleDiv.textContent = message.content;
-
         const timeDiv = document.createElement('div');
         timeDiv.className = 'message-time';
         timeDiv.textContent = this.formatTime(message.timestamp);
 
-        messageDiv.appendChild(bubbleDiv);
+        if (message.role === 'assistant') {
+            const wf = this.parseWorkflowContent(message.content);
+            if (wf) {
+                // Intro text above diagram (if any)
+                if (wf.intro) {
+                    const introBubble = document.createElement('div');
+                    introBubble.className = 'message-bubble';
+                    introBubble.textContent = wf.intro;
+                    messageDiv.appendChild(introBubble);
+                }
+                // Diagram card
+                const diagram = document.createElement('div');
+                diagram.className = 'workflow-diagram';
+                // Gradient bar
+                const bar = document.createElement('div');
+                bar.className = 'wf-gradient-bar';
+                diagram.appendChild(bar);
+                // Columns
+                const grid = document.createElement('div');
+                grid.className = 'wf-columns';
+                if (wf.current) {
+                    const col = document.createElement('div');
+                    col.className = 'wf-col wf-col-current';
+                    col.innerHTML = '<div class="wf-tag wf-tag-current">Current</div>' +
+                        '<p class="wf-text">' + this.escapeHtml(wf.current).replace(/\n/g, '<br>') + '</p>';
+                    grid.appendChild(col);
+                }
+                if (wf.proposed) {
+                    const col = document.createElement('div');
+                    col.className = 'wf-col wf-col-proposed';
+                    col.innerHTML = '<div class="wf-tag wf-tag-proposed">Proposed</div>' +
+                        '<p class="wf-text">' + this.escapeHtml(wf.proposed).replace(/\n/g, '<br>') + '</p>';
+                    grid.appendChild(col);
+                }
+                diagram.appendChild(grid);
+                // Key Change
+                if (wf.keyChange) {
+                    const kc = document.createElement('div');
+                    kc.className = 'wf-key-change';
+                    kc.innerHTML = '<span class="wf-key-change-label">Key Change</span>' +
+                        '<span class="wf-key-change-text">' + this.escapeHtml(wf.keyChange) + '</span>';
+                    diagram.appendChild(kc);
+                }
+                messageDiv.appendChild(diagram);
+                messageDiv.classList.add('message-workflow-wide');
+            } else {
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.className = 'message-bubble';
+                bubbleDiv.textContent = message.content;
+                messageDiv.appendChild(bubbleDiv);
+            }
+        } else {
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.textContent = message.content;
+            messageDiv.appendChild(bubbleDiv);
+        }
+
         messageDiv.appendChild(timeDiv);
         this.elements.chatMessages.appendChild(messageDiv);
     }
@@ -614,6 +667,36 @@ class AIDiscoveryWidget {
     // MESSAGE RENDERING
     // ==========================================
 
+    parseWorkflowContent(text) {
+        if (!text.includes('CURRENT:') || !text.includes('PROPOSED:')) return null;
+        let current = null, proposed = null, keyChange = null, intro = null;
+        const currentIndex = text.indexOf('CURRENT:');
+        if (currentIndex > 0) {
+            intro = text.substring(0, currentIndex).trim() || null;
+        }
+        const afterCurrent = text.split('CURRENT:')[1];
+        const currentEnd = afterCurrent.search(/\n(PROPOSED:|KEY CHANGE:)/i);
+        current = (currentEnd > -1 ? afterCurrent.substring(0, currentEnd) : afterCurrent).trim();
+        if (text.includes('PROPOSED:')) {
+            const afterProposed = text.split('PROPOSED:')[1];
+            const proposedEnd = afterProposed.search(/\n(CURRENT:|KEY CHANGE:)/i);
+            proposed = (proposedEnd > -1 ? afterProposed.substring(0, proposedEnd) : afterProposed).trim();
+        }
+        const kcm = text.match(/KEY CHANGE:\s*([\s\S]*?)(?:\n\n|$)/i);
+        if (kcm) keyChange = kcm[1].trim();
+        if (!current && !proposed) return null;
+        return { intro, current, proposed, keyChange };
+    }
+
+    escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
     renderMessages() {
         this.elements.chatMessages.innerHTML = '';
         this.state.messages.forEach(message => this.renderMessage(message));
@@ -624,15 +707,68 @@ class AIDiscoveryWidget {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${message.role}`;
 
-        const bubbleDiv = document.createElement('div');
-        bubbleDiv.className = 'message-bubble';
-        bubbleDiv.textContent = message.content;
-
         const timeDiv = document.createElement('div');
         timeDiv.className = 'message-time';
         timeDiv.textContent = this.formatTime(message.timestamp);
 
-        messageDiv.appendChild(bubbleDiv);
+        if (message.role === 'assistant') {
+            const wf = this.parseWorkflowContent(message.content);
+            if (wf) {
+                // Intro text above diagram (if any)
+                if (wf.intro) {
+                    const introBubble = document.createElement('div');
+                    introBubble.className = 'message-bubble';
+                    introBubble.textContent = wf.intro;
+                    messageDiv.appendChild(introBubble);
+                }
+                // Diagram card
+                const diagram = document.createElement('div');
+                diagram.className = 'workflow-diagram';
+                // Gradient bar
+                const bar = document.createElement('div');
+                bar.className = 'wf-gradient-bar';
+                diagram.appendChild(bar);
+                // Columns
+                const grid = document.createElement('div');
+                grid.className = 'wf-columns';
+                if (wf.current) {
+                    const col = document.createElement('div');
+                    col.className = 'wf-col wf-col-current';
+                    col.innerHTML = '<div class="wf-tag wf-tag-current">Current</div>' +
+                        '<p class="wf-text">' + this.escapeHtml(wf.current).replace(/\n/g, '<br>') + '</p>';
+                    grid.appendChild(col);
+                }
+                if (wf.proposed) {
+                    const col = document.createElement('div');
+                    col.className = 'wf-col wf-col-proposed';
+                    col.innerHTML = '<div class="wf-tag wf-tag-proposed">Proposed</div>' +
+                        '<p class="wf-text">' + this.escapeHtml(wf.proposed).replace(/\n/g, '<br>') + '</p>';
+                    grid.appendChild(col);
+                }
+                diagram.appendChild(grid);
+                // Key Change
+                if (wf.keyChange) {
+                    const kc = document.createElement('div');
+                    kc.className = 'wf-key-change';
+                    kc.innerHTML = '<span class="wf-key-change-label">Key Change</span>' +
+                        '<span class="wf-key-change-text">' + this.escapeHtml(wf.keyChange) + '</span>';
+                    diagram.appendChild(kc);
+                }
+                messageDiv.appendChild(diagram);
+                messageDiv.classList.add('message-workflow-wide');
+            } else {
+                const bubbleDiv = document.createElement('div');
+                bubbleDiv.className = 'message-bubble';
+                bubbleDiv.textContent = message.content;
+                messageDiv.appendChild(bubbleDiv);
+            }
+        } else {
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+            bubbleDiv.textContent = message.content;
+            messageDiv.appendChild(bubbleDiv);
+        }
+
         messageDiv.appendChild(timeDiv);
         this.elements.chatMessages.appendChild(messageDiv);
     }
