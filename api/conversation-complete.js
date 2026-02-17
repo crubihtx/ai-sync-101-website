@@ -362,8 +362,18 @@ export default async function handler(req) {
 
   try {
     // Access environment variables in Edge Runtime
-    const RESEND_API_KEY = process.env.RESEND_KEY; // Matches RESEND_KEY in Vercel
+    // Debug: Check all possible variable names
+    const RESEND_API_KEY = process.env.RESEND_KEY || process.env.RESEND_API_KEY;
     const TEAM_EMAIL = process.env.TEAM_EMAIL || 'carlos@computech.support';
+
+    // Debug logging (safe - doesn't log actual keys)
+    console.log('Environment check:', {
+      hasRESEND_KEY: !!process.env.RESEND_KEY,
+      hasRESEND_API_KEY: !!process.env.RESEND_API_KEY,
+      hasTEAM_EMAIL: !!process.env.TEAM_EMAIL,
+      finalKeyPresent: !!RESEND_API_KEY,
+      teamEmail: TEAM_EMAIL
+    });
 
     const { messages, metadata } = await req.json();
 
