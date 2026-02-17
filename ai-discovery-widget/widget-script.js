@@ -310,6 +310,13 @@ class AIDiscoveryWidget {
                 }
                 messageDiv.appendChild(diagram);
                 messageDiv.classList.add('message-workflow-wide');
+                // Render follow-up text after the diagram (e.g. AI's closing question)
+                if (wf.outro) {
+                    const outroBubble = document.createElement('div');
+                    outroBubble.className = 'message-bubble';
+                    outroBubble.textContent = wf.outro;
+                    messageDiv.appendChild(outroBubble);
+                }
             } else {
                 const bubbleDiv = document.createElement('div');
                 bubbleDiv.className = 'message-bubble';
@@ -669,7 +676,7 @@ class AIDiscoveryWidget {
 
     parseWorkflowContent(text) {
         if (!text.includes('CURRENT:') || !text.includes('PROPOSED:')) return null;
-        let current = null, proposed = null, keyChange = null, intro = null;
+        let current = null, proposed = null, keyChange = null, intro = null, outro = null;
         const currentIndex = text.indexOf('CURRENT:');
         if (currentIndex > 0) {
             intro = text.substring(0, currentIndex).trim() || null;
@@ -682,10 +689,19 @@ class AIDiscoveryWidget {
             const proposedEnd = afterProposed.search(/\n(CURRENT:|KEY CHANGE:)/i);
             proposed = (proposedEnd > -1 ? afterProposed.substring(0, proposedEnd) : afterProposed).trim();
         }
-        const kcm = text.match(/KEY CHANGE:\s*([\s\S]*?)(?:\n\n|$)/i);
-        if (kcm) keyChange = kcm[1].trim();
+        const kcMatch = text.match(/KEY CHANGE:\s*([\s\S]*)/i);
+        if (kcMatch) {
+            const afterKC = kcMatch[1];
+            const kcEnd = afterKC.search(/\n\n/);
+            keyChange = (kcEnd > -1 ? afterKC.substring(0, kcEnd) : afterKC).trim();
+            if (kcEnd > -1) {
+                outro = afterKC.substring(kcEnd)
+                    .replace(/<!--EXTRACT:[\s\S]*?-->/g, '')
+                    .trim() || null;
+            }
+        }
         if (!current && !proposed) return null;
-        return { intro, current, proposed, keyChange };
+        return { intro, current, proposed, keyChange, outro };
     }
 
     escapeHtml(str) {
@@ -756,6 +772,13 @@ class AIDiscoveryWidget {
                 }
                 messageDiv.appendChild(diagram);
                 messageDiv.classList.add('message-workflow-wide');
+                // Render follow-up text after the diagram (e.g. AI's closing question)
+                if (wf.outro) {
+                    const outroBubble = document.createElement('div');
+                    outroBubble.className = 'message-bubble';
+                    outroBubble.textContent = wf.outro;
+                    messageDiv.appendChild(outroBubble);
+                }
             } else {
                 const bubbleDiv = document.createElement('div');
                 bubbleDiv.className = 'message-bubble';
