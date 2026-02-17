@@ -1044,12 +1044,12 @@ html,body{
   .avoid-break{page-break-inside:avoid}
 }
 /* PAGE */
-.page{width:100%;max-width:816px;margin:0 auto;padding:72px 96px 72px;box-sizing:border-box}
+.page{width:100%;max-width:816px;margin:0 auto;padding:0 96px 96px;box-sizing:border-box}
 /* GRADIENT BAR */
 .gradient-bar{
   height:4px;
   background:linear-gradient(135deg,#00A3FF 0%,#7B2FFF 50%,#FF1F8F 100%);
-  border-radius:2px;margin-bottom:48px;
+  margin:96px -96px 40px;
 }
 /* HEADER */
 .doc-header{
@@ -1187,7 +1187,8 @@ html,body{
 .footer-note{font-size:11px;color:#444}
 /* MOBILE */
 @media screen and (max-width:680px){
-  .page{padding:32px 24px 48px}
+  .page{padding:0 24px 48px}
+  .gradient-bar{margin:32px -24px 32px}
   .doc-header{flex-wrap:wrap;gap:12px}
   .doc-meta{text-align:left}
   .wf-grid{flex-direction:column}
