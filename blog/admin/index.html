@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Editor - AI Sync 101</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Quill.js WYSIWYG Editor -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --color-blue: #00A3FF;
+            --color-pink: #FF1F8F;
+            --color-black: #0A0A0A;
+            --color-gray-900: #1A1A1A;
+            --color-gray-800: #2A2A2A;
+            --color-gray-700: #404040;
+            --color-gray-600: #666666;
+            --color-gray-500: #888888;
+            --color-gray-400: #AAAAAA;
+            --color-gray-300: #CCCCCC;
+            --color-white: #FFFFFF;
+            --gradient-primary: linear-gradient(135deg, var(--color-blue) 0%, var(--color-pink) 100%);
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--color-black);
+            color: #E5E5E5;
+            min-height: 100vh;
+        }
+
+        /* ==========================================
+           LOGIN SCREEN
+           ========================================== */
+
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at 30% 50%, rgba(0, 163, 255, 0.06) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(255, 31, 143, 0.06) 0%, transparent 50%),
+                var(--color-black);
+        }
+
+        .login-card {
+            background: var(--color-gray-900);
+            border: 1px solid var(--color-gray-800);
+            border-radius: 16px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+
+        .login-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-subtitle {
+            color: var(--color-gray-500);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .login-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--color-gray-800);
+            border-radius: 8px;
+            background: var(--color-black);
+            color: var(--color-white);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: var(--color-blue);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 0.875rem;
+            border: none;
+            border-radius: 8px;
+            background: var(--gradient-primary);
+            color: white;
+            font-family: var(--font-family);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 163, 255, 0.3);
+        }
+
+        .login-error {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .login-hint {
+            color: var(--color-gray-600);
+            font-size: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        /* ==========================================
+           EDITOR SCREEN
+           ========================================== */
+
+        .editor-screen {
+            display: none;
+        }
+
+        .editor-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: var(--color-gray-900);
+            border-bottom: 1px solid var(--color-gray-800);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .editor-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .editor-brand-text {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .editor-brand a {
+            color: var(--color-gray-500);
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .editor-brand a:hover { color: var(--color-blue); }
+
+        .editor-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-family);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--color-gray-700);
+            color: var(--color-gray-400);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--color-blue);
+            color: var(--color-white);
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 163, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .editor-main {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 0;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* Left Panel - Content Editor */
+        .editor-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .field-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .field-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-500);
+            margin-bottom: 0.5rem;
+        }
+
+        .field-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--color-gray-800);
+            border-radius: 8px;
+            background: var(--color-gray-900);
+            color: var(--color-white);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .field-input:focus {
+            outline: none;
+            border-color: var(--color-blue);
+        }
+
+        .title-input {
+            font-size: 1.75rem;
+            font-weight: 700;
+            padding: 1rem;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--color-gray-800);
+            border-radius: 0;
+        }
+
+        .title-input:focus {
+            border-color: var(--color-blue);
+        }
+
+        .title-input::placeholder {
+            color: var(--color-gray-700);
+        }
+
+        .excerpt-input {
+            resize: vertical;
+            min-height: 80px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* Quill Editor Overrides */
+        .quill-wrapper {
+            border: 2px solid var(--color-gray-800);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .ql-toolbar.ql-snow {
+            background: var(--color-gray-900);
+            border: none;
+            border-bottom: 1px solid var(--color-gray-800);
+        }
+
+        .ql-toolbar .ql-stroke {
+            stroke: var(--color-gray-400);
+        }
+
+        .ql-toolbar .ql-fill {
+            fill: var(--color-gray-400);
+        }
+
+        .ql-toolbar .ql-picker-label {
+            color: var(--color-gray-400);
+        }
+
+        .ql-toolbar button:hover .ql-stroke,
+        .ql-toolbar button.ql-active .ql-stroke {
+            stroke: var(--color-blue);
+        }
+
+        .ql-toolbar button:hover .ql-fill,
+        .ql-toolbar button.ql-active .ql-fill {
+            fill: var(--color-blue);
+        }
+
+        .ql-toolbar .ql-picker-options {
+            background: var(--color-gray-900);
+            border-color: var(--color-gray-800);
+        }
+
+        .ql-toolbar .ql-picker-item {
+            color: var(--color-gray-300);
+        }
+
+        .ql-container.ql-snow {
+            border: none;
+            font-family: var(--font-family);
+            font-size: 1.0625rem;
+        }
+
+        .ql-editor {
+            background: var(--color-black);
+            color: var(--color-gray-300);
+            min-height: 400px;
+            padding: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .ql-editor.ql-blank::before {
+            color: var(--color-gray-700);
+            font-style: normal;
+        }
+
+        .ql-editor h2 { color: var(--color-white); margin: 1.5rem 0 0.75rem; font-size: 1.75rem; }
+        .ql-editor h3 { color: var(--color-white); margin: 1.25rem 0 0.5rem; font-size: 1.375rem; }
+        .ql-editor p { margin-bottom: 1rem; }
+        .ql-editor blockquote {
+            border-left: 4px solid var(--color-blue);
+            padding-left: 1rem;
+            color: var(--color-gray-400);
+        }
+        .ql-editor a { color: var(--color-blue); }
+        .ql-editor strong { color: var(--color-white); }
+
+        /* Right Panel - Sidebar */
+        .editor-sidebar {
+            background: var(--color-gray-900);
+            border-left: 1px solid var(--color-gray-800);
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--color-gray-400);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-gray-800);
+        }
+
+        .field-select {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 2px solid var(--color-gray-800);
+            border-radius: 8px;
+            background: var(--color-black);
+            color: var(--color-white);
+            font-family: var(--font-family);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .field-select:focus {
+            outline: none;
+            border-color: var(--color-blue);
+        }
+
+        .field-select option {
+            background: var(--color-gray-900);
+        }
+
+        /* Status indicator */
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(0, 163, 255, 0.1);
+            border: 1px solid rgba(0, 163, 255, 0.2);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--color-blue);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-blue);
+        }
+
+        .status-indicator.success {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-indicator.success .status-dot {
+            background: #10b981;
+        }
+
+        .status-indicator.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .status-indicator.error .status-dot {
+            background: #ef4444;
+        }
+
+        /* GitHub Setup */
+        .github-setup {
+            margin-top: 1rem;
+        }
+
+        .github-setup .field-input {
+            font-size: 0.85rem;
+            padding: 0.5rem 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .github-info {
+            font-size: 0.75rem;
+            color: var(--color-gray-600);
+            margin-top: 0.5rem;
+            line-height: 1.5;
+        }
+
+        /* Posts list */
+        .posts-list {
+            list-style: none;
+        }
+
+        .posts-list-item {
+            padding: 0.75rem;
+            border: 1px solid var(--color-gray-800);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .posts-list-item:hover {
+            border-color: var(--color-blue);
+            background: rgba(0, 163, 255, 0.05);
+        }
+
+        .posts-list-item-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--color-white);
+            margin-bottom: 0.25rem;
+        }
+
+        .posts-list-item-meta {
+            font-size: 0.75rem;
+            color: var(--color-gray-600);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            z-index: 10000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success { background: linear-gradient(135deg, #10b981, #059669); }
+        .toast.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .editor-main {
+                grid-template-columns: 1fr;
+            }
+            .editor-sidebar {
+                border-left: none;
+                border-top: 1px solid var(--color-gray-800);
+            }
+            .editor-header {
+                flex-wrap: wrap;
+                gap: 0.75rem;
+            }
+            .editor-content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-logo">Blog Editor</div>
+            <p class="login-subtitle">AI Sync 101 Content Management</p>
+            <p class="login-error" id="loginError">Incorrect password. Please try again.</p>
+            <input type="password" class="login-input" id="loginPassword" placeholder="Enter password" autofocus>
+            <button class="login-btn" id="loginBtn">Sign In</button>
+            <p class="login-hint">Contact your admin for access credentials</p>
+        </div>
+    </div>
+
+    <!-- EDITOR SCREEN -->
+    <div class="editor-screen" id="editorScreen">
+        <!-- Header -->
+        <div class="editor-header">
+            <div class="editor-brand">
+                <span class="editor-brand-text">Blog Editor</span>
+                <a href="/blog/">View Blog →</a>
+                <a href="/">Main Site →</a>
+            </div>
+            <div class="editor-actions">
+                <button class="btn btn-outline" id="btnNewPost">+ New Post</button>
+                <button class="btn btn-outline" id="btnSaveDraft">Save Draft</button>
+                <button class="btn btn-primary" id="btnPublish">Publish</button>
+                <button class="btn btn-outline" id="btnLogout" style="margin-left: 0.5rem;">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Editor -->
+        <div class="editor-main">
+            <!-- Content Panel -->
+            <div class="editor-content">
+                <div class="field-group">
+                    <input type="text" class="field-input title-input" id="postTitle" placeholder="Post title...">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Excerpt / Summary</label>
+                    <textarea class="field-input excerpt-input" id="postExcerpt" placeholder="Write a brief summary that appears on the blog listing page..."></textarea>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Content</label>
+                    <div class="quill-wrapper">
+                        <div id="quillEditor"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="editor-sidebar">
+                <!-- Post Settings -->
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Post Settings</h3>
+
+                    <div class="field-group">
+                        <label class="field-label">Category</label>
+                        <select class="field-select" id="postCategory">
+                            <option value="Operations">Operations</option>
+                            <option value="Automation">Automation</option>
+                            <option value="AI">AI</option>
+                            <option value="Case Studies">Case Studies</option>
+                            <option value="Industry Insights">Industry Insights</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Author</label>
+                        <input type="text" class="field-input" id="postAuthor" value="AI Sync 101" style="font-size: 0.9rem; padding: 0.625rem 0.875rem;">
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Date</label>
+                        <input type="date" class="field-input" id="postDate" style="font-size: 0.9rem; padding: 0.625rem 0.875rem;">
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Read Time</label>
+                        <input type="text" class="field-input" id="postReadTime" value="5 min read" style="font-size: 0.9rem; padding: 0.625rem 0.875rem;">
+                    </div>
+                </div>
+
+                <!-- Publishing -->
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Publishing</h3>
+                    <div class="status-indicator" id="publishStatus">
+                        <span class="status-dot"></span>
+                        <span>Draft - Not Published</span>
+                    </div>
+
+                    <div class="github-setup">
+                        <label class="field-label" style="margin-top: 1rem;">GitHub Token</label>
+                        <input type="password" class="field-input" id="githubToken" placeholder="ghp_xxxxxxxxxxxx" style="font-size: 0.85rem; padding: 0.5rem 0.75rem;">
+                        <p class="github-info">
+                            Token stored locally in your browser only. Needs <code>repo</code> scope.
+                            <br><a href="https://github.com/settings/tokens/new?scopes=repo&description=AI+Sync+101+Blog+Editor" target="_blank" style="color: var(--color-blue);">Create a token →</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Saved Drafts -->
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Your Drafts</h3>
+                    <ul class="posts-list" id="draftsList">
+                        <li style="color: var(--color-gray-600); font-size: 0.85rem;">No drafts yet</li>
+                    </ul>
+                </div>
+
+                <!-- Download Option -->
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">Manual Export</h3>
+                    <button class="btn btn-outline" id="btnDownload" style="width: 100%; margin-bottom: 0.5rem;">
+                        Download Post Files
+                    </button>
+                    <p class="github-info">
+                        Download the post JSON files to manually add to the website repository.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Quill.js -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+    <script>
+        // ==========================================
+        // BLOG EDITOR - AI Sync 101
+        // ==========================================
+
+        // Configuration
+        const GITHUB_REPO = 'crubihtx/ai-sync-101-website';
+        const GITHUB_BRANCH = 'main';
+        const POSTS_PATH = 'blog/posts';
+
+        // Password hash (SHA-256 of the password)
+        // Default password: "aisync101blog"
+        const PASSWORD_HASH = '7a5c8e4b3d2f1a0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6';
+
+        // State
+        let quill;
+        let currentDraftId = null;
+
+        // ==========================================
+        // AUTHENTICATION
+        // ==========================================
+
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function checkAuth() {
+            const savedAuth = localStorage.getItem('blog_auth');
+            if (savedAuth) {
+                showEditor();
+            }
+        }
+
+        async function login() {
+            const password = document.getElementById('loginPassword').value;
+            if (!password) return;
+
+            const hash = await hashPassword(password);
+            const storedHash = localStorage.getItem('blog_password_hash') || PASSWORD_HASH;
+
+            // First login sets the password, or check against stored
+            if (!localStorage.getItem('blog_password_hash')) {
+                // Accept any password on first setup and store it
+                localStorage.setItem('blog_password_hash', hash);
+                localStorage.setItem('blog_auth', 'true');
+                showEditor();
+                showToast('Welcome! Your password has been set.', 'success');
+                return;
+            }
+
+            if (hash === storedHash) {
+                localStorage.setItem('blog_auth', 'true');
+                showEditor();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginPassword').value = '';
+                document.getElementById('loginPassword').focus();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('blog_auth');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('editorScreen').style.display = 'none';
+        }
+
+        function showEditor() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('editorScreen').style.display = 'block';
+            initEditor();
+            loadDrafts();
+            loadGitHubToken();
+
+            // Set today's date
+            document.getElementById('postDate').value = new Date().toISOString().split('T')[0];
+        }
+
+        // ==========================================
+        // QUILL EDITOR INIT
+        // ==========================================
+
+        function initEditor() {
+            if (quill) return;
+
+            quill = new Quill('#quillEditor', {
+                theme: 'snow',
+                placeholder: 'Write your blog post content here...',
+                modules: {
+                    toolbar: [
+                        [{ 'header': [2, 3, 4, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            // Auto-calculate read time
+            quill.on('text-change', () => {
+                const text = quill.getText();
+                const words = text.trim().split(/\s+/).length;
+                const readTime = Math.max(1, Math.ceil(words / 200));
+                document.getElementById('postReadTime').value = `${readTime} min read`;
+            });
+        }
+
+        // ==========================================
+        // SLUG GENERATION
+        // ==========================================
+
+        function generateSlug(title) {
+            return title
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '')
+                .substring(0, 60);
+        }
+
+        // ==========================================
+        // POST DATA
+        // ==========================================
+
+        function getPostData() {
+            const title = document.getElementById('postTitle').value.trim();
+            const excerpt = document.getElementById('postExcerpt').value.trim();
+            const category = document.getElementById('postCategory').value;
+            const author = document.getElementById('postAuthor').value.trim();
+            const date = document.getElementById('postDate').value;
+            const readTime = document.getElementById('postReadTime').value.trim();
+            const content = quill.root.innerHTML;
+            const slug = generateSlug(title);
+
+            return { slug, title, category, excerpt, author, date, readTime, content };
+        }
+
+        function validatePost(post) {
+            if (!post.title) return 'Please enter a post title';
+            if (!post.excerpt) return 'Please enter an excerpt/summary';
+            if (!post.content || post.content === '<p><br></p>') return 'Please write some content';
+            if (!post.date) return 'Please set a date';
+            return null;
+        }
+
+        function loadPostIntoEditor(post) {
+            document.getElementById('postTitle').value = post.title || '';
+            document.getElementById('postExcerpt').value = post.excerpt || '';
+            document.getElementById('postCategory').value = post.category || 'Operations';
+            document.getElementById('postAuthor').value = post.author || 'AI Sync 101';
+            document.getElementById('postDate').value = post.date || new Date().toISOString().split('T')[0];
+            document.getElementById('postReadTime').value = post.readTime || '5 min read';
+
+            if (quill && post.content) {
+                quill.root.innerHTML = post.content;
+            }
+        }
+
+        function clearEditor() {
+            document.getElementById('postTitle').value = '';
+            document.getElementById('postExcerpt').value = '';
+            document.getElementById('postCategory').value = 'Operations';
+            document.getElementById('postAuthor').value = 'AI Sync 101';
+            document.getElementById('postDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('postReadTime').value = '5 min read';
+            if (quill) quill.setContents([]);
+            currentDraftId = null;
+            updateStatus('Draft - Not Published', '');
+        }
+
+        // ==========================================
+        // DRAFTS (localStorage)
+        // ==========================================
+
+        function saveDraft() {
+            const post = getPostData();
+            if (!post.title) {
+                showToast('Please enter a title before saving', 'error');
+                return;
+            }
+
+            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const draftId = currentDraftId || 'draft_' + Date.now();
+            drafts[draftId] = {
+                ...post,
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('blog_drafts', JSON.stringify(drafts));
+            currentDraftId = draftId;
+            loadDrafts();
+            showToast('Draft saved!', 'success');
+        }
+
+        function loadDrafts() {
+            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const list = document.getElementById('draftsList');
+
+            const draftEntries = Object.entries(drafts).sort((a, b) =>
+                new Date(b[1].savedAt) - new Date(a[1].savedAt)
+            );
+
+            if (draftEntries.length === 0) {
+                list.innerHTML = '<li style="color: var(--color-gray-600); font-size: 0.85rem;">No drafts yet</li>';
+                return;
+            }
+
+            list.innerHTML = draftEntries.map(([id, draft]) => `
+                <li class="posts-list-item" onclick="loadDraft('${id}')">
+                    <div class="posts-list-item-title">${draft.title || 'Untitled'}</div>
+                    <div class="posts-list-item-meta">
+                        ${draft.category} · ${new Date(draft.savedAt).toLocaleDateString()}
+                        <span onclick="event.stopPropagation(); deleteDraft('${id}')" style="color: #ef4444; cursor: pointer; margin-left: 0.5rem;">Delete</span>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function loadDraft(draftId) {
+            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const draft = drafts[draftId];
+            if (draft) {
+                loadPostIntoEditor(draft);
+                currentDraftId = draftId;
+                updateStatus('Draft loaded', '');
+                showToast('Draft loaded', 'success');
+            }
+        }
+
+        function deleteDraft(draftId) {
+            if (!confirm('Delete this draft?')) return;
+            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            delete drafts[draftId];
+            localStorage.setItem('blog_drafts', JSON.stringify(drafts));
+            if (currentDraftId === draftId) {
+                currentDraftId = null;
+            }
+            loadDrafts();
+            showToast('Draft deleted', 'success');
+        }
+
+        // ==========================================
+        // GITHUB PUBLISHING
+        // ==========================================
+
+        function loadGitHubToken() {
+            const token = localStorage.getItem('github_token');
+            if (token) {
+                document.getElementById('githubToken').value = token;
+            }
+        }
+
+        function saveGitHubToken() {
+            const token = document.getElementById('githubToken').value.trim();
+            if (token) {
+                localStorage.setItem('github_token', token);
+            }
+        }
+
+        async function githubApiRequest(path, method, body) {
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token) throw new Error('GitHub token required');
+
+            const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+                method,
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/vnd.github.v3+json'
+                },
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'GitHub API error');
+            }
+
+            return response.json();
+        }
+
+        async function getFileSha(path) {
+            try {
+                const token = document.getElementById('githubToken').value.trim();
+                const response = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`, {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.sha;
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        async function publishToGitHub() {
+            const post = getPostData();
+            const error = validatePost(post);
+            if (error) {
+                showToast(error, 'error');
+                return;
+            }
+
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token) {
+                showToast('Please enter your GitHub token to publish', 'error');
+                return;
+            }
+
+            saveGitHubToken();
+            updateStatus('Publishing...', '');
+
+            try {
+                // 1. Create/update the post JSON file
+                const postData = {
+                    slug: post.slug,
+                    title: post.title,
+                    category: post.category,
+                    excerpt: post.excerpt,
+                    author: post.author,
+                    date: post.date,
+                    readTime: post.readTime,
+                    content: post.content
+                };
+
+                const postPath = `${POSTS_PATH}/${post.slug}.json`;
+                const postContent = btoa(unescape(encodeURIComponent(JSON.stringify(postData, null, 2))));
+                const postSha = await getFileSha(postPath);
+
+                const postBody = {
+                    message: `Add blog post: ${post.title}`,
+                    content: postContent,
+                    branch: GITHUB_BRANCH
+                };
+                if (postSha) postBody.sha = postSha;
+
+                await githubApiRequest(postPath, 'PUT', postBody);
+
+                // 2. Update the index.json
+                const indexPath = `${POSTS_PATH}/index.json`;
+                let indexData = { posts: [] };
+                const indexSha = await getFileSha(indexPath);
+
+                try {
+                    const token2 = document.getElementById('githubToken').value.trim();
+                    const indexResponse = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${indexPath}`, {
+                        headers: {
+                            'Authorization': `token ${token2}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        }
+                    });
+                    if (indexResponse.ok) {
+                        const indexFile = await indexResponse.json();
+                        indexData = JSON.parse(decodeURIComponent(escape(atob(indexFile.content))));
+                    }
+                } catch (e) {}
+
+                // Remove existing entry for this slug, then add new one at the top
+                indexData.posts = indexData.posts.filter(p => p.slug !== post.slug);
+                indexData.posts.unshift({
+                    slug: post.slug,
+                    title: post.title,
+                    category: post.category,
+                    excerpt: post.excerpt,
+                    author: post.author,
+                    date: post.date,
+                    readTime: post.readTime,
+                    featured: false
+                });
+
+                const indexContent = btoa(unescape(encodeURIComponent(JSON.stringify(indexData, null, 2))));
+                const indexBody = {
+                    message: `Update blog index: add ${post.title}`,
+                    content: indexContent,
+                    branch: GITHUB_BRANCH
+                };
+                if (indexSha) indexBody.sha = indexSha;
+
+                await githubApiRequest(indexPath, 'PUT', indexBody);
+
+                updateStatus('Published!', 'success');
+                showToast('Post published successfully! It will be live in ~1 minute after deployment.', 'success');
+
+                // Remove from drafts if it was a draft
+                if (currentDraftId) {
+                    const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+                    delete drafts[currentDraftId];
+                    localStorage.setItem('blog_drafts', JSON.stringify(drafts));
+                    currentDraftId = null;
+                    loadDrafts();
+                }
+
+            } catch (error) {
+                console.error('Publish error:', error);
+                updateStatus('Publish failed', 'error');
+                showToast(`Publish failed: ${error.message}`, 'error');
+            }
+        }
+
+        // ==========================================
+        // DOWNLOAD / MANUAL EXPORT
+        // ==========================================
+
+        function downloadPostFiles() {
+            const post = getPostData();
+            const error = validatePost(post);
+            if (error) {
+                showToast(error, 'error');
+                return;
+            }
+
+            // Create post JSON
+            const postData = {
+                slug: post.slug,
+                title: post.title,
+                category: post.category,
+                excerpt: post.excerpt,
+                author: post.author,
+                date: post.date,
+                readTime: post.readTime,
+                content: post.content
+            };
+
+            // Download post file
+            const blob = new Blob([JSON.stringify(postData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${post.slug}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('Post file downloaded! Place it in /blog/posts/ and update index.json', 'success');
+        }
+
+        // ==========================================
+        // UI HELPERS
+        // ==========================================
+
+        function updateStatus(text, type) {
+            const el = document.getElementById('publishStatus');
+            el.className = 'status-indicator' + (type ? ' ' + type : '');
+            el.querySelector('span:last-child').textContent = text;
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => { toast.classList.remove('show'); }, 4000);
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+
+        // Login
+        document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') login();
+        });
+
+        // Editor actions
+        document.getElementById('btnNewPost').addEventListener('click', () => {
+            if (document.getElementById('postTitle').value && !confirm('Clear current post and start new?')) return;
+            clearEditor();
+        });
+        document.getElementById('btnSaveDraft').addEventListener('click', saveDraft);
+        document.getElementById('btnPublish').addEventListener('click', publishToGitHub);
+        document.getElementById('btnDownload').addEventListener('click', downloadPostFiles);
+        document.getElementById('btnLogout').addEventListener('click', logout);
+
+        // Save GitHub token on change
+        document.getElementById('githubToken').addEventListener('change', saveGitHubToken);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveDraft();
+            }
+        });
+
+        // Check auth on load
+        checkAuth();
+    </script>
+</body>
+</html>

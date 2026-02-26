@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - AI Sync 101 | Operations, Automation & AI Insights</title>
+    <meta name="description" content="Insights on operations, automation, and building systems that work. Practical guides for mid-market companies looking to optimize their technology.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo.png">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.aisync101.com/blog/">
+    <meta property="og:title" content="Blog - AI Sync 101">
+    <meta property="og:description" content="Insights on operations, automation, and building systems that work.">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/blog/css/blog.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo-partnership">
+                    <a href="/" class="logo">
+                        <img src="/assets/logo.png" alt="AI Sync 101" class="logo-img">
+                    </a>
+                    <span class="plus-sign">+</span>
+                    <a href="https://louisianacomputech.com" target="_blank" rel="noopener noreferrer" class="logo-link">
+                        <img src="/assets/lact-logo.png" alt="LAComputech" class="logo-img lact-logo-nav">
+                    </a>
+                </div>
+                <div class="nav-links">
+                    <a href="/#problems" class="nav-link">Problems</a>
+                    <a href="/#services" class="nav-link">Services</a>
+                    <a href="/#process" class="nav-link">Process</a>
+                    <a href="/#results" class="nav-link">Results</a>
+                    <a href="/#faq" class="nav-link">FAQ</a>
+                    <a href="/#about" class="nav-link">About</a>
+                    <a href="/blog/" class="nav-link active">Blog</a>
+                    <a href="/#contact" class="cta-button">Ask How We Can Help</a>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Blog Hero -->
+    <section class="blog-hero">
+        <div class="container">
+            <div class="section-header">
+                <h1 class="section-title">AI Sync 101 <span class="gradient-text">Blog</span></h1>
+                <p class="section-subtitle">Insights on operations, automation, and building systems that work</p>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="category-filter">
+                <button class="filter-btn active" data-category="all">All Posts</button>
+                <button class="filter-btn" data-category="Operations">Operations</button>
+                <button class="filter-btn" data-category="Automation">Automation</button>
+                <button class="filter-btn" data-category="AI">AI</button>
+                <button class="filter-btn" data-category="Case Studies">Case Studies</button>
+                <button class="filter-btn" data-category="Industry Insights">Industry Insights</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Listing -->
+    <section class="blog-listing">
+        <div class="container">
+            <div class="blog-grid" id="blogGrid">
+                <!-- Loading state -->
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="/assets/logo.png" alt="AI Sync 101" class="logo-img">
+                    <p class="footer-tagline">20 years building systems that work.</p>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Services</h4>
+                        <ul>
+                            <li><a href="/#services">Quick Wins</a></li>
+                            <li><a href="/#services">Custom Platforms</a></li>
+                            <li><a href="/#services">AI Integration</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="/#about">About</a></li>
+                            <li><a href="/#process">Process</a></li>
+                            <li><a href="/#faq">FAQ</a></li>
+                            <li><a href="/blog/">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Connect</h4>
+                        <ul>
+                            <li><a href="/#contact">Contact</a></li>
+                            <li><a href="https://louisianacomputech.com" target="_blank" rel="noopener">LAComputech</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 AI Sync 101. Sister company to LAComputech.</p>
+                <p class="footer-cert">Secure, reliable infrastructure</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // BLOG LISTING PAGE LOGIC
+        // ==========================================
+
+        const blogGrid = document.getElementById('blogGrid');
+        let allPosts = [];
+        let currentCategory = 'all';
+
+        // Category icon SVGs
+        const categoryIcons = {
+            'Operations': '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>',
+            'Automation': '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>',
+            'AI': '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>',
+            'Case Studies': '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>',
+            'Industry Insights': '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>'
+        };
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        }
+
+        function createPostCard(post) {
+            const icon = categoryIcons[post.category] || categoryIcons['Operations'];
+            return `
+                <a href="/blog/post.html?slug=${post.slug}" class="blog-card" data-category="${post.category}">
+                    <div class="blog-card-image">
+                        <div class="blog-card-placeholder">${icon}</div>
+                    </div>
+                    <div class="blog-card-content">
+                        <span class="blog-card-category">${post.category}</span>
+                        <h3 class="blog-card-title">${post.title}</h3>
+                        <p class="blog-card-excerpt">${post.excerpt}</p>
+                        <div class="blog-card-meta">
+                            <span class="blog-card-author">${post.author}</span>
+                            <span class="blog-card-date">${formatDate(post.date)}</span>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        function renderPosts(posts) {
+            if (posts.length === 0) {
+                blogGrid.innerHTML = '<div class="no-posts">No posts found in this category yet. Check back soon!</div>';
+                return;
+            }
+            blogGrid.innerHTML = posts.map(createPostCard).join('');
+        }
+
+        function filterPosts(category) {
+            currentCategory = category;
+            const filtered = category === 'all'
+                ? allPosts
+                : allPosts.filter(p => p.category === category);
+            renderPosts(filtered);
+        }
+
+        // Load posts
+        async function loadPosts() {
+            try {
+                const response = await fetch('/blog/posts/index.json');
+                const data = await response.json();
+                allPosts = data.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+                renderPosts(allPosts);
+            } catch (error) {
+                console.error('Failed to load blog posts:', error);
+                blogGrid.innerHTML = '<div class="no-posts">Unable to load posts. Please try again later.</div>';
+            }
+        }
+
+        // Category filter click handlers
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterPosts(btn.dataset.category);
+            });
+        });
+
+        // Mobile nav toggle
+        const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', () => {
+                mobileMenuToggle.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+            document.querySelectorAll('.nav-link, .nav-links .cta-button').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenuToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                });
+            });
+        }
+
+        // Nav scroll effect
+        const nav = document.querySelector('.nav');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Initialize
+        loadPosts();
+    </script>
+</body>
+</html>
