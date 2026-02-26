@@ -437,6 +437,58 @@
     margin: 3rem 0;
 }
 
+/* Post Images */
+.post-content figure.post-image,
+.post-content .post-image {
+    margin: 2.5rem -2rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.post-content figure.post-image img,
+.post-content .post-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: transform var(--transition-normal);
+}
+
+.post-content figure.post-image:hover img {
+    transform: scale(1.01);
+}
+
+.post-content figure.post-image figcaption {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--color-gray-600);
+    margin-top: 0.75rem;
+    font-style: italic;
+}
+
+/* Featured image at top of post */
+.post-featured-image-full {
+    max-width: 900px;
+    margin: 0 auto 2rem;
+    padding: 0 2rem;
+}
+
+.post-featured-image-full img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Blog listing card with real image */
+.blog-listing .blog-card-image img,
+.blog-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 /* Callout Box */
 .callout {
     padding: 1.5rem 2rem;

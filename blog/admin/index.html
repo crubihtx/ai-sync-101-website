@@ -357,16 +357,74 @@
             font-style: normal;
         }
 
-        .ql-editor h2 { color: var(--color-white); margin: 1.5rem 0 0.75rem; font-size: 1.75rem; }
-        .ql-editor h3 { color: var(--color-white); margin: 1.25rem 0 0.5rem; font-size: 1.375rem; }
-        .ql-editor p { margin-bottom: 1rem; }
+        /* Match blog post typography exactly */
+        .ql-editor h2 { color: var(--color-white); margin: 2rem 0 0.75rem; font-size: 1.75rem; font-weight: 600; line-height: 1.2; }
+        .ql-editor h3 { color: var(--color-white); margin: 1.5rem 0 0.5rem; font-size: 1.375rem; font-weight: 600; line-height: 1.2; }
+        .ql-editor h4 { color: var(--color-white); margin: 1.25rem 0 0.5rem; font-size: 1.125rem; font-weight: 600; }
+        .ql-editor p { margin-bottom: 1.25rem; color: var(--color-gray-300); font-size: 1.0625rem; line-height: 1.8; }
         .ql-editor blockquote {
             border-left: 4px solid var(--color-blue);
-            padding-left: 1rem;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            background: rgba(0, 163, 255, 0.05);
+            border-radius: 0 8px 8px 0;
+            color: var(--color-gray-300);
+            font-style: italic;
+        }
+        .ql-editor ul li, .ql-editor ol li {
+            color: var(--color-gray-300);
+            font-size: 1.0625rem;
+            line-height: 1.8;
+            margin-bottom: 0.5rem;
+        }
+        .ql-editor a { color: var(--color-blue); text-decoration: underline; }
+        .ql-editor strong { color: var(--color-white); font-weight: 600; }
+        .ql-editor img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin: 1rem 0;
+        }
+
+        /* Style hint bar */
+        .style-hint {
+            padding: 0.5rem 1rem;
+            background: rgba(0, 163, 255, 0.08);
+            border: 1px solid rgba(0, 163, 255, 0.15);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--color-gray-500);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        /* Featured image field */
+        .featured-image-preview {
+            width: 100%;
+            height: 120px;
+            border-radius: 8px;
+            background: var(--color-black);
+            border: 2px dashed var(--color-gray-800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-gray-600);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        .featured-image-preview:hover {
+            border-color: var(--color-blue);
             color: var(--color-gray-400);
         }
-        .ql-editor a { color: var(--color-blue); }
-        .ql-editor strong { color: var(--color-white); }
+        .featured-image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
         /* Right Panel - Sidebar */
         .editor-sidebar {
@@ -589,6 +647,9 @@
 
                 <div class="field-group">
                     <label class="field-label">Content</label>
+                    <div class="style-hint">
+                        <strong>Writing tips:</strong> Use H2 for main sections, H3 for subsections. Bold key terms. The editor matches the live blog's font, size, and spacing exactly — what you see here is what readers see.
+                    </div>
                     <div class="quill-wrapper">
                         <div id="quillEditor"></div>
                     </div>
@@ -625,6 +686,16 @@
                     <div class="field-group">
                         <label class="field-label">Read Time</label>
                         <input type="text" class="field-input" id="postReadTime" value="5 min read" style="font-size: 0.9rem; padding: 0.625rem 0.875rem;">
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Featured Image</label>
+                        <div class="featured-image-preview" id="featuredImagePreview" onclick="document.getElementById('featuredImageFile').click()">
+                            Click to upload or drag image
+                        </div>
+                        <input type="file" id="featuredImageFile" accept="image/*" style="display:none;">
+                        <input type="text" class="field-input" id="featuredImagePath" placeholder="/blog/images/my-image.jpeg" style="font-size: 0.8rem; padding: 0.5rem 0.75rem;">
+                        <p class="github-info">Upload an image or enter the path manually. Images are stored in /blog/images/</p>
                     </div>
                 </div>
 
@@ -766,15 +837,39 @@
                 theme: 'snow',
                 placeholder: 'Write your blog post content here...',
                 modules: {
-                    toolbar: [
-                        [{ 'header': [2, 3, 4, false] }],
-                        ['bold', 'italic', 'underline', 'strike'],
-                        ['blockquote', 'code-block'],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                        ['link'],
-                        ['clean']
-                    ]
+                    toolbar: {
+                        container: [
+                            [{ 'header': [2, 3, 4, false] }],
+                            ['bold', 'italic', 'underline', 'strike'],
+                            ['blockquote', 'code-block'],
+                            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                            ['link', 'image'],
+                            ['clean']
+                        ],
+                        handlers: {
+                            image: imageHandler
+                        }
+                    }
                 }
+            });
+
+            // Strip pasted formatting to keep styles consistent
+            quill.clipboard.addMatcher(Node.ELEMENT_NODE, (node, delta) => {
+                delta.ops = delta.ops.map(op => {
+                    if (op.attributes) {
+                        // Keep only these attributes, strip everything else (font, color, size, etc.)
+                        const allowed = ['bold', 'italic', 'underline', 'strike', 'link', 'header', 'list', 'blockquote', 'code-block', 'image'];
+                        const cleaned = {};
+                        for (const key of allowed) {
+                            if (op.attributes[key] !== undefined) {
+                                cleaned[key] = op.attributes[key];
+                            }
+                        }
+                        op.attributes = Object.keys(cleaned).length > 0 ? cleaned : undefined;
+                    }
+                    return op;
+                });
+                return delta;
             });
 
             // Auto-calculate read time
@@ -784,6 +879,120 @@
                 const readTime = Math.max(1, Math.ceil(words / 200));
                 document.getElementById('postReadTime').value = `${readTime} min read`;
             });
+
+            // Featured image preview from file upload
+            document.getElementById('featuredImageFile').addEventListener('change', handleFeaturedImageUpload);
+
+            // Featured image path manual entry
+            document.getElementById('featuredImagePath').addEventListener('change', () => {
+                const path = document.getElementById('featuredImagePath').value.trim();
+                const preview = document.getElementById('featuredImagePreview');
+                if (path) {
+                    preview.innerHTML = `<img src="${path}" alt="Featured image preview" onerror="this.parentElement.innerHTML='Image not found'">`;
+                }
+            });
+        }
+
+        // Image handler for Quill toolbar button
+        function imageHandler() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async () => {
+                const file = input.files[0];
+                if (!file) return;
+
+                const token = document.getElementById('githubToken').value.trim();
+                if (!token) {
+                    // No GitHub token - use base64 inline (works but not ideal)
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const range = quill.getSelection(true);
+                        quill.insertEmbed(range.index, 'image', e.target.result);
+                        showToast('Image added inline. For best performance, set up GitHub token to upload images to the server.', 'success');
+                    };
+                    reader.readAsDataURL(file);
+                    return;
+                }
+
+                // Upload to GitHub
+                try {
+                    showToast('Uploading image...', 'success');
+                    const slug = generateSlug(document.getElementById('postTitle').value || 'post');
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    const imgName = `${slug}-${Date.now()}.${ext}`;
+                    const imgPath = `blog/images/${imgName}`;
+
+                    const reader = new FileReader();
+                    reader.onload = async (e) => {
+                        const base64 = e.target.result.split(',')[1];
+                        try {
+                            await githubApiRequest(imgPath, 'PUT', {
+                                message: `Add blog image: ${imgName}`,
+                                content: base64,
+                                branch: GITHUB_BRANCH
+                            });
+                            const imgUrl = `/${imgPath}`;
+                            const range = quill.getSelection(true);
+                            quill.insertEmbed(range.index, 'image', imgUrl);
+                            showToast('Image uploaded!', 'success');
+                        } catch (err) {
+                            showToast('Upload failed: ' + err.message, 'error');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                } catch (err) {
+                    showToast('Image upload failed', 'error');
+                }
+            };
+            input.click();
+        }
+
+        // Handle featured image file upload
+        async function handleFeaturedImageUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const preview = document.getElementById('featuredImagePreview');
+            const pathInput = document.getElementById('featuredImagePath');
+
+            const token = document.getElementById('githubToken').value.trim();
+            if (!token) {
+                // Preview only, show the local file
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    preview.innerHTML = `<img src="${ev.target.result}" alt="Featured image">`;
+                    showToast('Preview shown. Enter GitHub token to upload, or set the image path manually.', 'success');
+                };
+                reader.readAsDataURL(file);
+                return;
+            }
+
+            // Upload to GitHub
+            showToast('Uploading featured image...', 'success');
+            const slug = generateSlug(document.getElementById('postTitle').value || 'post');
+            const ext = file.name.split('.').pop().toLowerCase();
+            const imgName = `${slug}-featured.${ext}`;
+            const imgPath = `blog/images/${imgName}`;
+
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const base64 = ev.target.result.split(',')[1];
+                try {
+                    await githubApiRequest(imgPath, 'PUT', {
+                        message: `Add featured image: ${imgName}`,
+                        content: base64,
+                        branch: GITHUB_BRANCH
+                    });
+                    const imgUrl = `/${imgPath}`;
+                    pathInput.value = imgUrl;
+                    preview.innerHTML = `<img src="${ev.target.result}" alt="Featured image">`;
+                    showToast('Featured image uploaded!', 'success');
+                } catch (err) {
+                    showToast('Upload failed: ' + err.message, 'error');
+                }
+            };
+            reader.readAsDataURL(file);
         }
 
         // ==========================================
@@ -811,10 +1020,11 @@
             const author = document.getElementById('postAuthor').value.trim();
             const date = document.getElementById('postDate').value;
             const readTime = document.getElementById('postReadTime').value.trim();
+            const featuredImage = document.getElementById('featuredImagePath').value.trim();
             const content = quill.root.innerHTML;
             const slug = generateSlug(title);
 
-            return { slug, title, category, excerpt, author, date, readTime, content };
+            return { slug, title, category, excerpt, author, date, readTime, featuredImage, content };
         }
 
         function validatePost(post) {
@@ -832,6 +1042,15 @@
             document.getElementById('postAuthor').value = post.author || 'AI Sync 101';
             document.getElementById('postDate').value = post.date || new Date().toISOString().split('T')[0];
             document.getElementById('postReadTime').value = post.readTime || '5 min read';
+            document.getElementById('featuredImagePath').value = post.featuredImage || '';
+
+            // Show featured image preview
+            const preview = document.getElementById('featuredImagePreview');
+            if (post.featuredImage) {
+                preview.innerHTML = `<img src="${post.featuredImage}" alt="Featured image" onerror="this.parentElement.innerHTML='Image not found'">`;
+            } else {
+                preview.innerHTML = 'Click to upload or drag image';
+            }
 
             if (quill && post.content) {
                 quill.root.innerHTML = post.content;
@@ -845,6 +1064,8 @@
             document.getElementById('postAuthor').value = 'AI Sync 101';
             document.getElementById('postDate').value = new Date().toISOString().split('T')[0];
             document.getElementById('postReadTime').value = '5 min read';
+            document.getElementById('featuredImagePath').value = '';
+            document.getElementById('featuredImagePreview').innerHTML = 'Click to upload or drag image';
             if (quill) quill.setContents([]);
             currentDraftId = null;
             updateStatus('Draft - Not Published', '');
@@ -1050,6 +1271,7 @@
                     author: post.author,
                     date: post.date,
                     readTime: post.readTime,
+                    featuredImage: post.featuredImage || '',
                     featured: false
                 });
 
