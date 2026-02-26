@@ -609,9 +609,16 @@
             <div class="login-logo">Blog Editor</div>
             <p class="login-subtitle">AI Sync 101 Content Management</p>
             <p class="login-error" id="loginError">Incorrect password. Please try again.</p>
-            <input type="password" class="login-input" id="loginPassword" placeholder="Enter password" autofocus>
+            <div class="field-group" style="margin-bottom: 0.75rem; text-align: left;">
+                <label class="field-label" style="margin-bottom: 0.25rem;">Email</label>
+                <input type="email" class="login-input" id="loginEmail" placeholder="Enter your email" style="margin-bottom: 0;">
+            </div>
+            <div class="field-group" style="margin-bottom: 1rem; text-align: left;">
+                <label class="field-label" style="margin-bottom: 0.25rem;">Password</label>
+                <input type="password" class="login-input" id="loginPassword" placeholder="Enter password" style="margin-bottom: 0;">
+            </div>
             <button class="login-btn" id="loginBtn">Sign In</button>
-            <p class="login-hint">Contact your admin for access credentials</p>
+            <p class="login-hint">Authorized editors only</p>
         </div>
     </div>
 
@@ -755,9 +762,9 @@
         const GITHUB_BRANCH = 'main';
         const POSTS_PATH = 'blog/posts';
 
-        // Password hash (SHA-256 of the password)
-        // Default password: "aisync101blog"
-        const PASSWORD_HASH = '7a5c8e4b3d2f1a0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6';
+        // Authorized admin
+        const ADMIN_EMAIL = 't@taylorrubi.com';
+        const PASSWORD_HASH = '3ef3c1745aa5cb5ec2a8e57f0c6d5341b2fd2618234d68659bde88f86af66226';
 
         // State
         let quill;
@@ -783,26 +790,30 @@
         }
 
         async function login() {
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const password = document.getElementById('loginPassword').value;
-            if (!password) return;
-
-            const hash = await hashPassword(password);
-            const storedHash = localStorage.getItem('blog_password_hash') || PASSWORD_HASH;
-
-            // First login sets the password, or check against stored
-            if (!localStorage.getItem('blog_password_hash')) {
-                // Accept any password on first setup and store it
-                localStorage.setItem('blog_password_hash', hash);
-                localStorage.setItem('blog_auth', 'true');
-                showEditor();
-                showToast('Welcome! Your password has been set.', 'success');
+            if (!email || !password) {
+                document.getElementById('loginError').textContent = 'Please enter both email and password.';
+                document.getElementById('loginError').style.display = 'block';
                 return;
             }
 
-            if (hash === storedHash) {
+            // Check email matches authorized admin
+            if (email !== ADMIN_EMAIL) {
+                document.getElementById('loginError').textContent = 'This email is not authorized.';
+                document.getElementById('loginError').style.display = 'block';
+                return;
+            }
+
+            // Check password hash
+            const hash = await hashPassword(password);
+            if (hash === PASSWORD_HASH) {
                 localStorage.setItem('blog_auth', 'true');
+                localStorage.setItem('blog_admin_email', email);
                 showEditor();
+                showToast('Welcome, Taylor!', 'success');
             } else {
+                document.getElementById('loginError').textContent = 'Incorrect password. Please try again.';
                 document.getElementById('loginError').style.display = 'block';
                 document.getElementById('loginPassword').value = '';
                 document.getElementById('loginPassword').focus();
@@ -1363,6 +1374,9 @@
 
         // Login
         document.getElementById('loginBtn').addEventListener('click', login);
+        document.getElementById('loginEmail').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { document.getElementById('loginPassword').focus(); }
+        });
         document.getElementById('loginPassword').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') login();
         });
