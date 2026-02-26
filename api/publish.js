@@ -154,6 +154,10 @@ export default async function handler(req, res) {
         date: post.date || new Date().toISOString().split('T')[0],
         readTime: post.readTime || '5 min read',
         content: post.content,
+        seoTitle: post.seoTitle || '',
+        seoDescription: post.seoDescription || '',
+        seoKeyword: post.seoKeyword || '',
+        featuredImage: post.featuredImage || '',
       };
 
       const postPath = `${POSTS_PATH}/${post.slug}.json`;

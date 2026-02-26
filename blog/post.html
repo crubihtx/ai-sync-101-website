@@ -10,9 +10,26 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/logo.png">
 
-    <!-- Open Graph (dynamic) -->
+    <!-- Open Graph (dynamic - populated by JS) -->
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="AI Sync 101 Blog">
+    <meta property="og:title" id="ogTitle" content="">
+    <meta property="og:description" id="ogDescription" content="">
+    <meta property="og:image" id="ogImage" content="">
+    <meta property="og:url" id="ogUrl" content="">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="twTitle" content="">
+    <meta name="twitter:description" id="twDescription" content="">
+    <meta name="twitter:image" id="twImage" content="">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" id="canonicalUrl" href="">
+
+    <!-- Article metadata -->
+    <meta name="keywords" id="metaKeywords" content="">
+    <meta name="author" content="AI Sync 101">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="/css/styles.css">
@@ -220,10 +237,88 @@
         }
 
         function renderPost(post) {
-            // Update page metadata
-            document.getElementById('pageTitle').textContent = `${post.title} - AI Sync 101 Blog`;
-            document.getElementById('pageDescription').content = post.excerpt;
+            // ====== SEO META TAGS ======
+            // Use SEO-specific fields if provided, fall back to regular fields
+            const seoTitle = post.seoTitle || post.title;
+            const seoDesc = post.seoDescription || post.excerpt;
+            const seoKeyword = post.seoKeyword || '';
+            const pageUrl = window.location.href;
+            const baseUrl = window.location.origin;
 
+            // Build absolute image URL for social sharing
+            let socialImage = '';
+            if (post.featuredImage) {
+                socialImage = post.featuredImage.startsWith('http')
+                    ? post.featuredImage
+                    : `${baseUrl}${post.featuredImage}`;
+            }
+
+            // Page title & meta description (what Google shows)
+            document.getElementById('pageTitle').textContent = `${seoTitle} - AI Sync 101 Blog`;
+            document.getElementById('pageDescription').content = seoDesc;
+
+            // Canonical URL
+            document.getElementById('canonicalUrl').href = pageUrl;
+
+            // Focus keyword → meta keywords
+            if (seoKeyword) {
+                document.getElementById('metaKeywords').content = seoKeyword;
+            }
+
+            // Open Graph tags (Facebook, LinkedIn, etc.)
+            document.getElementById('ogTitle').content = seoTitle;
+            document.getElementById('ogDescription').content = seoDesc;
+            document.getElementById('ogUrl').content = pageUrl;
+            if (socialImage) {
+                document.getElementById('ogImage').content = socialImage;
+            }
+
+            // Twitter Card tags
+            document.getElementById('twTitle').content = seoTitle;
+            document.getElementById('twDescription').content = seoDesc;
+            if (socialImage) {
+                document.getElementById('twImage').content = socialImage;
+            }
+
+            // Structured Data (JSON-LD) for Google rich results
+            const structuredData = {
+                '@context': 'https://schema.org',
+                '@type': 'BlogPosting',
+                'headline': seoTitle,
+                'description': seoDesc,
+                'author': {
+                    '@type': 'Organization',
+                    'name': post.author || 'AI Sync 101'
+                },
+                'publisher': {
+                    '@type': 'Organization',
+                    'name': 'AI Sync 101',
+                    'logo': {
+                        '@type': 'ImageObject',
+                        'url': `${baseUrl}/assets/logo.png`
+                    }
+                },
+                'datePublished': post.date,
+                'dateModified': post.date,
+                'mainEntityOfPage': {
+                    '@type': 'WebPage',
+                    '@id': pageUrl
+                }
+            };
+            if (socialImage) {
+                structuredData.image = socialImage;
+            }
+            if (seoKeyword) {
+                structuredData.keywords = seoKeyword;
+            }
+
+            // Inject JSON-LD script
+            const ldScript = document.createElement('script');
+            ldScript.type = 'application/ld+json';
+            ldScript.textContent = JSON.stringify(structuredData);
+            document.head.appendChild(ldScript);
+
+            // ====== RENDER VISIBLE CONTENT ======
             // Update post header
             document.getElementById('postCategory').textContent = post.category;
             document.getElementById('postTitle').textContent = post.title;
