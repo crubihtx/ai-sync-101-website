@@ -31,9 +31,12 @@ function getCorsHeaders(origin) {
   };
 }
 
-// Simple auth check - verify the admin password hash
-const ADMIN_EMAIL = 't@taylorrubi.com';
-const PASSWORD_HASH = '3ef3c1745aa5cb5ec2a8e57f0c6d5341b2fd2618234d68659bde88f86af66226';
+// Admin users authorized to publish
+const ADMIN_USERS = {
+  't@taylorrubi.com': '3ef3c1745aa5cb5ec2a8e57f0c6d5341b2fd2618234d68659bde88f86af66226',
+  'gerald@havenpm.org': '5cb6ec42491839d7aff01fb17da3e00d2dcec11280d5a1301442d3c7b3e0023a',
+  'taylor@havenpm.org': 'd925b1270231b4861bdbc9a27bbe91ecf1120fd16c062ccb714a78f4ad504548',
+};
 
 async function githubApiRequest(path, method, body, token) {
   const response = await fetch(
@@ -132,7 +135,8 @@ export default async function handler(req, res) {
     if (!email || !passwordHash) {
       return res.status(401).json({ error: 'Authentication required' });
     }
-    if (email.toLowerCase() !== ADMIN_EMAIL || passwordHash !== PASSWORD_HASH) {
+    const expectedHash = ADMIN_USERS[email.toLowerCase()];
+    if (!expectedHash || passwordHash !== expectedHash) {
       return res.status(403).json({ error: 'Not authorized' });
     }
 
@@ -241,7 +245,102 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(400).json({ error: 'Invalid action. Use "publish" or "upload-image".' });
+    // ==========================================
+    // ACTION: SAVE DRAFT
+    // ==========================================
+    if (action === 'save-draft') {
+      if (!post || !post.draftId) {
+        return res.status(400).json({ error: 'Missing draft data or draftId' });
+      }
+
+      const draftsPath = 'blog/drafts/drafts-index.json';
+      let draftsData = { drafts: [] };
+      const draftsFile = await getFileContent(draftsPath, githubToken);
+      if (draftsFile) {
+        draftsData = draftsFile.content;
+      }
+
+      // Remove existing entry for this draftId, then add/update
+      draftsData.drafts = draftsData.drafts.filter((d) => d.draftId !== post.draftId);
+      draftsData.drafts.unshift({
+        draftId: post.draftId,
+        title: post.title || 'Untitled',
+        category: post.category || '',
+        excerpt: post.excerpt || '',
+        author: post.author || 'AI Sync 101',
+        date: post.date || new Date().toISOString().split('T')[0],
+        readTime: post.readTime || '',
+        content: post.content || '',
+        featuredImage: post.featuredImage || '',
+        seoTitle: post.seoTitle || '',
+        seoDescription: post.seoDescription || '',
+        seoKeyword: post.seoKeyword || '',
+        slug: post.slug || '',
+        savedBy: email,
+        savedAt: new Date().toISOString(),
+      });
+
+      const draftsContent = Buffer.from(JSON.stringify(draftsData, null, 2), 'utf-8').toString('base64');
+      const draftsBody = {
+        message: `Save draft: ${post.title || 'Untitled'}`,
+        content: draftsContent,
+        branch: GITHUB_BRANCH,
+      };
+      if (draftsFile) draftsBody.sha = draftsFile.sha;
+
+      await githubApiRequest(draftsPath, 'PUT', draftsBody, githubToken);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Draft saved to cloud!',
+        draftId: post.draftId,
+      });
+    }
+
+    // ==========================================
+    // ACTION: LOAD DRAFTS
+    // ==========================================
+    if (action === 'load-drafts') {
+      const draftsPath = 'blog/drafts/drafts-index.json';
+      const draftsFile = await getFileContent(draftsPath, githubToken);
+      if (!draftsFile) {
+        return res.status(200).json({ success: true, drafts: [] });
+      }
+      return res.status(200).json({ success: true, drafts: draftsFile.content.drafts || [] });
+    }
+
+    // ==========================================
+    // ACTION: DELETE DRAFT
+    // ==========================================
+    if (action === 'delete-draft') {
+      const { draftId } = req.body;
+      if (!draftId) {
+        return res.status(400).json({ error: 'Missing draftId' });
+      }
+
+      const draftsPath = 'blog/drafts/drafts-index.json';
+      const draftsFile = await getFileContent(draftsPath, githubToken);
+      if (!draftsFile) {
+        return res.status(200).json({ success: true, message: 'No drafts to delete' });
+      }
+
+      const draftsData = draftsFile.content;
+      draftsData.drafts = draftsData.drafts.filter((d) => d.draftId !== draftId);
+
+      const draftsContent = Buffer.from(JSON.stringify(draftsData, null, 2), 'utf-8').toString('base64');
+      const draftsBody = {
+        message: `Delete draft: ${draftId}`,
+        content: draftsContent,
+        branch: GITHUB_BRANCH,
+      };
+      draftsBody.sha = draftsFile.sha;
+
+      await githubApiRequest(draftsPath, 'PUT', draftsBody, githubToken);
+
+      return res.status(200).json({ success: true, message: 'Draft deleted' });
+    }
+
+    return res.status(400).json({ error: 'Invalid action. Use "publish", "upload-image", "save-draft", "load-drafts", or "delete-draft".' });
   } catch (error) {
     console.error('Publish error:', error);
     return res.status(500).json({ error: error.message || 'Internal server error' });

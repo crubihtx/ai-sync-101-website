@@ -600,7 +600,7 @@
         </div>
 
         <div class="dash-welcome">
-            <h1>Welcome back, <span>Taylor</span></h1>
+            <h1>Welcome back, <span id="dashWelcomeName">there</span></h1>
             <p>What would you like to work on today?</p>
         </div>
 
@@ -815,8 +815,11 @@
         // ==========================================
 
         const API_URL = 'https://ai-sync-101-website.vercel.app/api/publish';
-        const ADMIN_EMAIL = 't@taylorrubi.com';
-        const PASSWORD_HASH = '3ef3c1745aa5cb5ec2a8e57f0c6d5341b2fd2618234d68659bde88f86af66226';
+        const ADMIN_USERS = {
+            't@taylorrubi.com': '3ef3c1745aa5cb5ec2a8e57f0c6d5341b2fd2618234d68659bde88f86af66226',
+            'gerald@havenpm.org': '5cb6ec42491839d7aff01fb17da3e00d2dcec11280d5a1301442d3c7b3e0023a',
+            'taylor@havenpm.org': 'd925b1270231b4861bdbc9a27bbe91ecf1120fd16c062ccb714a78f4ad504548',
+        };
 
         let quill;
         let currentDraftId = null;
@@ -850,17 +853,20 @@
                 document.getElementById('loginError').style.display = 'block';
                 return;
             }
-            if (email !== ADMIN_EMAIL) {
+            const expectedHash = ADMIN_USERS[email];
+            if (!expectedHash) {
                 document.getElementById('loginError').textContent = 'This email is not authorized.';
                 document.getElementById('loginError').style.display = 'block';
                 return;
             }
             const hash = await hashPassword(password);
-            if (hash === PASSWORD_HASH) {
+            if (hash === expectedHash) {
                 localStorage.setItem('blog_auth', 'true');
                 localStorage.setItem('blog_admin_email', email);
+                localStorage.setItem('blog_admin_hash', hash);
                 showDashboard();
-                showToast('Welcome, Taylor!', 'success');
+                const firstName = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
+                showToast(`Welcome, ${firstName}!`, 'success');
             } else {
                 document.getElementById('loginError').textContent = 'Incorrect password. Please try again.';
                 document.getElementById('loginError').style.display = 'block';
@@ -871,6 +877,8 @@
 
         function logout() {
             localStorage.removeItem('blog_auth');
+            localStorage.removeItem('blog_admin_email');
+            localStorage.removeItem('blog_admin_hash');
             switchView('login');
         }
 
@@ -887,20 +895,26 @@
 
         async function showDashboard() {
             switchView('dashboard');
+            const email = localStorage.getItem('blog_admin_email') || '';
+            const name = email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1);
+            document.getElementById('dashWelcomeName').textContent = name || 'there';
             loadDashboardPosts();
+            await loadCloudDrafts();
             loadDashboardDrafts();
         }
 
-        function showEditorNewPost() {
+        async function showEditorNewPost() {
             switchView('editor');
             initEditor();
             clearEditor();
+            await loadCloudDrafts();
             loadDrafts();
         }
 
-        function showEditorWithDraft(draftId) {
+        async function showEditorWithDraft(draftId) {
             switchView('editor');
             initEditor();
+            await loadCloudDrafts();
             loadDrafts();
             loadDraft(draftId);
         }
@@ -934,7 +948,7 @@
 
         function loadDashboardDrafts() {
             const container = document.getElementById('dashDraftsList');
-            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const drafts = getMergedDrafts();
             const entries = Object.entries(drafts).sort((a, b) => new Date(b[1].savedAt) - new Date(a[1].savedAt));
 
             if (entries.length === 0) {
@@ -942,15 +956,19 @@
                 return;
             }
 
-            container.innerHTML = entries.map(([id, draft]) => `
+            container.innerHTML = entries.map(([id, draft]) => {
+                const isCloud = !!cloudDrafts[id];
+                const icon = isCloud ? '<span title="Saved to cloud" style="color:#00A3FF;">&#9729;</span> ' : '';
+                return `
                 <div class="dash-post-item">
                     <div>
-                        <div class="dash-post-title">${draft.title || 'Untitled'}</div>
+                        <div class="dash-post-title">${icon}${draft.title || 'Untitled'}</div>
                         <div class="dash-post-meta">${draft.category || 'No category'} · Saved ${new Date(draft.savedAt).toLocaleDateString()}</div>
                     </div>
                     <button class="dash-post-btn" onclick="showEditorWithDraft('${id}')">Edit</button>
                 </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         // ==========================================
@@ -1082,14 +1100,7 @@
         }
 
         function saveDraftSilent() {
-            const post = getPostData();
-            if (!post.title) return;
-
-            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
-            const draftId = currentDraftId || 'draft_' + Date.now();
-            drafts[draftId] = { ...post, savedAt: new Date().toISOString() };
-            localStorage.setItem('blog_drafts', JSON.stringify(drafts));
-            currentDraftId = draftId;
+            saveDraftToLocal();
             loadDrafts();
         }
 
@@ -1178,11 +1189,13 @@
         // ==========================================
 
         async function apiRequest(body) {
-            const email = localStorage.getItem('blog_admin_email') || ADMIN_EMAIL;
+            const email = localStorage.getItem('blog_admin_email');
+            const passwordHash = localStorage.getItem('blog_admin_hash');
+            if (!email || !passwordHash) throw new Error('Not logged in');
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...body, email, passwordHash: PASSWORD_HASH })
+                body: JSON.stringify({ ...body, email, passwordHash })
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'API request failed');
@@ -1330,19 +1343,74 @@
         // DRAFTS
         // ==========================================
 
-        function saveDraft() {
+        // Cloud drafts cache (loaded from API)
+        let cloudDrafts = {};
+
+        async function saveDraft() {
             const post = getPostData();
             if (!post.title) { showToast('Please enter a title before saving', 'error'); return; }
-            saveDraftSilent();
+
             const indicator = document.getElementById('saveIndicator');
-            indicator.textContent = 'Saved';
-            indicator.className = 'save-indicator saved';
-            hasUnsavedChanges = false;
-            showToast('Draft saved!', 'success');
+            indicator.textContent = 'Saving to cloud...';
+            indicator.className = 'save-indicator saving';
+
+            // Save to localStorage first (instant)
+            saveDraftToLocal();
+
+            // Then save to cloud
+            try {
+                const draftId = currentDraftId || 'draft_' + Date.now();
+                currentDraftId = draftId;
+                await apiRequest({ action: 'save-draft', post: { ...post, draftId } });
+                indicator.textContent = 'Saved to cloud';
+                indicator.className = 'save-indicator saved';
+                hasUnsavedChanges = false;
+                showToast('Draft saved to cloud!', 'success');
+                await loadCloudDrafts();
+                loadDrafts();
+            } catch (error) {
+                console.error('Cloud save failed:', error);
+                indicator.textContent = 'Saved locally';
+                indicator.className = 'save-indicator saved';
+                hasUnsavedChanges = false;
+                showToast('Saved locally (cloud save failed)', 'error');
+            }
+        }
+
+        function saveDraftToLocal() {
+            const post = getPostData();
+            if (!post.title) return;
+            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const draftId = currentDraftId || 'draft_' + Date.now();
+            drafts[draftId] = { ...post, savedAt: new Date().toISOString() };
+            localStorage.setItem('blog_drafts', JSON.stringify(drafts));
+            currentDraftId = draftId;
+        }
+
+        async function loadCloudDrafts() {
+            try {
+                const result = await apiRequest({ action: 'load-drafts' });
+                cloudDrafts = {};
+                (result.drafts || []).forEach(d => { cloudDrafts[d.draftId] = d; });
+            } catch (e) {
+                console.error('Failed to load cloud drafts:', e);
+            }
+        }
+
+        function getMergedDrafts() {
+            // Merge local + cloud drafts, cloud takes precedence for same ID
+            const localDrafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const merged = { ...localDrafts };
+            for (const [id, draft] of Object.entries(cloudDrafts)) {
+                if (!merged[id] || new Date(draft.savedAt) >= new Date(merged[id].savedAt || 0)) {
+                    merged[id] = draft;
+                }
+            }
+            return merged;
         }
 
         function loadDrafts() {
-            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const drafts = getMergedDrafts();
             const list = document.getElementById('draftsList');
             const entries = Object.entries(drafts).sort((a, b) => new Date(b[1].savedAt) - new Date(a[1].savedAt));
 
@@ -1351,21 +1419,25 @@
                 return;
             }
 
-            list.innerHTML = entries.map(([id, draft]) => `
+            list.innerHTML = entries.map(([id, draft]) => {
+                const isCloud = !!cloudDrafts[id];
+                const icon = isCloud ? '<span title="Saved to cloud" style="color:#00A3FF;margin-right:4px;">&#9729;</span>' : '';
+                return `
                 <li class="posts-list-item" onclick="loadDraft('${id}')">
-                    <div class="posts-list-item-title">${draft.title || 'Untitled'}</div>
+                    <div class="posts-list-item-title">${icon}${draft.title || 'Untitled'}</div>
                     <div class="posts-list-item-meta">
                         ${draft.category || ''} · ${new Date(draft.savedAt).toLocaleDateString()}
-                        <span onclick="event.stopPropagation(); deleteDraft('${id}')" style="color: #ef4444; cursor: pointer; margin-left: 0.5rem;">×</span>
+                        <span onclick="event.stopPropagation(); deleteDraft('${id}')" style="color: #ef4444; cursor: pointer; margin-left: 0.5rem;">&times;</span>
                     </div>
                 </li>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function loadDraft(draftId) {
             switchView('editor');
             initEditor();
-            const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
+            const drafts = getMergedDrafts();
             const draft = drafts[draftId];
             if (draft) {
                 loadPostIntoEditor(draft);
@@ -1375,11 +1447,24 @@
             }
         }
 
-        function deleteDraft(draftId) {
+        async function deleteDraft(draftId) {
             if (!confirm('Delete this draft?')) return;
+
+            // Remove from localStorage
             const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
             delete drafts[draftId];
             localStorage.setItem('blog_drafts', JSON.stringify(drafts));
+
+            // Remove from cloud
+            if (cloudDrafts[draftId]) {
+                try {
+                    await apiRequest({ action: 'delete-draft', draftId });
+                    delete cloudDrafts[draftId];
+                } catch (e) {
+                    console.error('Cloud delete failed:', e);
+                }
+            }
+
             if (currentDraftId === draftId) currentDraftId = null;
             loadDrafts();
             loadDashboardDrafts();
@@ -1420,9 +1505,15 @@
                 showToast(result.message || 'Post published! Live in ~1 minute.', 'success');
 
                 if (currentDraftId) {
+                    // Clean up local draft
                     const drafts = JSON.parse(localStorage.getItem('blog_drafts') || '{}');
                     delete drafts[currentDraftId];
                     localStorage.setItem('blog_drafts', JSON.stringify(drafts));
+                    // Clean up cloud draft
+                    if (cloudDrafts[currentDraftId]) {
+                        try { await apiRequest({ action: 'delete-draft', draftId: currentDraftId }); } catch (e) {}
+                        delete cloudDrafts[currentDraftId];
+                    }
                     currentDraftId = null;
                     loadDrafts();
                 }
