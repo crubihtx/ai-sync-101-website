@@ -1,6 +1,17 @@
 {
   "posts": [
     {
+      "slug": "platform-for-ai/",
+      "title": "Finding a Platform for AI That Delivers Operational ROI",
+      "category": "AI",
+      "excerpt": "Stop losing revenue to \"spreadsheet chaos\" and manual data entry with a custom platform for AI designed for operational ROI. Discover how AI Sync 101 integrates AI agents into your existing workflows to drive measurable growth in as little as 30 days.",
+      "author": "AI Sync 101",
+      "date": "2026-04-02",
+      "readTime": "5 min read",
+      "featuredImage": "/blog/images/how-to-choose-the-right-platform-for-ai-success-featured.webp",
+      "featured": false
+    },
+    {
       "slug": "ai-platforms-for-business-that-scale",
       "title": "How to Choose AI Platforms for Business That Actually Scale",
       "category": "AI",
