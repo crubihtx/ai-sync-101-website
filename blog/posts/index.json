@@ -1,6 +1,17 @@
 {
   "posts": [
     {
+      "slug": "ai-platforms-for-business-that-scale",
+      "title": "How to Choose AI Platforms for Business That Actually Scale",
+      "category": "AI",
+      "excerpt": "Struggling with disconnected systems and manual work? Learn how to choose AI platforms for business that integrate, automate, and scale with your operations.",
+      "author": "AI Sync 101",
+      "date": "2026-04-02",
+      "readTime": "3 min read",
+      "featuredImage": "/blog/images/how-to-choose-ai-platforms-for-business-that-actually-scale-featured.webp",
+      "featured": false
+    },
+    {
       "slug": "7-signs-operations-need-automation",
       "title": "7 Signs Your Operations Need Automation",
       "category": "Automation",
